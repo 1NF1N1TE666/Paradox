@@ -3,35 +3,22 @@ use super::*;
 // FIGHTER_STATUS_KIND_SPECIAL_S
 
 pub unsafe extern "C" fn special_s_main(fighter: &mut L2CFighterCommon) -> L2CValue {
-    WorkModule::off_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_CONTINUE);
-    WorkModule::set_int(fighter.module_accessor, -1, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STOP_Y_FRAME);
-    WorkModule::set_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STEP_START, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
-    WorkModule::set_int(fighter.module_accessor, -1, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP_PREV);
+    fighter.off_flag(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_CONTINUE);
+    fighter.set_int(-1, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STOP_Y_FRAME);
+    fighter.set_int(*FIGHTER_FALCO_ILLUSION_STEP_START, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
+    fighter.set_int(-1, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP_PREV);
     PostureModule::set_stick_lr(fighter.module_accessor, 0.0);
     PostureModule::update_rot_y_lr(fighter.module_accessor);
     if fighter.global_table[SITUATION_KIND].get_i32() != *SITUATION_KIND_GROUND {
         special_s_air_mot(fighter);
-    }
-    else {
+    } else {
         special_s_ground_mot(fighter);
     }
-    let illusion_rush_speed_mul = WorkModule::get_param_float(
-        fighter.module_accessor,
-        hash40("param_special_s"),
-        hash40("illusion_rush_speed_mul")
-    );
-    let illusion_rush_speed_mul_power_up = WorkModule::get_param_float(
-        fighter.module_accessor,
-        hash40("param_special_s"),
-        hash40("illusion_rush_speed_mul_power_up")
-    );
-    WorkModule::set_float(
-        fighter.module_accessor,
-        illusion_rush_speed_mul * illusion_rush_speed_mul_power_up,
-        *FIGHTER_STATUS_WORK_ID_FLOAT_RESERVE_KINETIC_MOTION_SPEED_MUL
-    );
+    let illusion_rush_speed_mul = WorkModule::get_param_float(fighter.module_accessor, hash40("param_special_s"), hash40("illusion_rush_speed_mul"));
+    let illusion_rush_speed_mul_power_up = WorkModule::get_param_float(fighter.module_accessor, hash40("param_special_s"), hash40("illusion_rush_speed_mul_power_up"));
+    fighter.set_float(illusion_rush_speed_mul * illusion_rush_speed_mul_power_up, *FIGHTER_STATUS_WORK_ID_FLOAT_RESERVE_KINETIC_MOTION_SPEED_MUL);
     if !StopModule::is_stop(fighter.module_accessor) {
-        WorkModule::dec_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STOP_Y_FRAME);
+        fighter.dec_int(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STOP_Y_FRAME);
     }
     fighter.global_table[SUB_STATUS2].assign(&L2CValue::Ptr(special_s_substatus as *const () as _));
 	fighter.main_shift(special_s_main_loop)
@@ -46,67 +33,47 @@ pub unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> 
             return 0.into();
         }
     }
-    let step = WorkModule::get_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
+    let step = fighter.get_int(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
     let situation = fighter.global_table[SITUATION_KIND].get_i32();
     let mut cont = false;
     if !StatusModule::is_changing(fighter.module_accessor) {
         let is_end = MotionModule::is_end(fighter.module_accessor);
         if fighter.global_table[PREV_SITUATION_KIND].get_i32() != *SITUATION_KIND_GROUND {
             if step == *FIGHTER_FALCO_ILLUSION_STEP_FORCE_END {
-                WorkModule::set_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STEP_END, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
+                fighter.set_int(*FIGHTER_FALCO_ILLUSION_STEP_END, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
                 cont = true;
-            }
-            else if step == *FIGHTER_FALCO_ILLUSION_STEP_END {
-                if is_end
-                && situation == *SITUATION_KIND_AIR {
+            } else if step == *FIGHTER_FALCO_ILLUSION_STEP_END {
+                if is_end && situation == *SITUATION_KIND_AIR {
                     fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), true.into());
-                    WorkModule::set_float(fighter.module_accessor,3.0, *FIGHTER_INSTANCE_WORK_ID_FLOAT_LANDING_FRAME);
+                    fighter.set_float(3.0, *FIGHTER_INSTANCE_WORK_ID_FLOAT_LANDING_FRAME);
                     return 0.into();
                 }
                 if situation == *SITUATION_KIND_GROUND {
                     KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_GROUND_STOP);
                     GroundModule::correct(fighter.module_accessor, GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND));
-                    MotionModule::change_motion(
-                        fighter.module_accessor,
-                        Hash40::new("special_s_landing"),
-                        0.0,
-                        1.0,
-                        false,
-                        0.0,
-                        false,
-                        false
-                    );
+                    MotionModule::change_motion(fighter.module_accessor, Hash40::new("special_s_landing"), 0.0, 1.0, false, 0.0, false, false);
                     return 0.into();
                 }
-            }
-            else if step == *FIGHTER_FALCO_ILLUSION_STEP_RUSH
-            || step == *FIGHTER_FALCO_ILLUSION_STEP_START {
-                if situation == *SITUATION_KIND_GROUND
-                || is_end {
+            } else if step == *FIGHTER_FALCO_ILLUSION_STEP_RUSH || step == *FIGHTER_FALCO_ILLUSION_STEP_START {
+                if situation == *SITUATION_KIND_GROUND || is_end {
                     cont = true;
                 }
-            }
-        }
-        else {
+            } else {}
+        } else {
             if step == *FIGHTER_FALCO_ILLUSION_STEP_FORCE_END {
-                WorkModule::set_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STEP_END, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
+                fighter.set_int(*FIGHTER_FALCO_ILLUSION_STEP_END, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
                 cont = true;
-            }
-            else if step == *FIGHTER_FALCO_ILLUSION_STEP_END {
+            } else if step == *FIGHTER_FALCO_ILLUSION_STEP_END {
                 if situation == *SITUATION_KIND_AIR {
                     fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), true.into());
                     return 0.into();
                 }
-                if is_end
-                && situation == *SITUATION_KIND_GROUND {
+                if is_end && situation == *SITUATION_KIND_GROUND {
                     fighter.change_status(FIGHTER_STATUS_KIND_WAIT.into(), true.into());
                     return 0.into();
                 }
-            }
-            else if step == *FIGHTER_FALCO_ILLUSION_STEP_RUSH
-            || step == *FIGHTER_FALCO_ILLUSION_STEP_START {
-                if situation == *SITUATION_KIND_AIR
-                || is_end {
+            } else if step == *FIGHTER_FALCO_ILLUSION_STEP_RUSH || step == *FIGHTER_FALCO_ILLUSION_STEP_START {
+                if situation == *SITUATION_KIND_AIR || is_end {
                     cont = true;
                 }
             }
@@ -114,15 +81,14 @@ pub unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> 
     }
     if cont {
         if !StatusModule::is_changing(fighter.module_accessor) {
-            if !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_RUSH_FORCE_END)
-            && !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_HIT_SHIELD_TO_END) {
+            if !fighter.is_flag(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_RUSH_FORCE_END) {
                 if MotionModule::is_end(fighter.module_accessor) {
-                    WorkModule::inc_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
-                    WorkModule::off_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_CONTINUE);
+                    fighter.inc_int(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
+                    fighter.off_flag(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_CONTINUE);
                 }
             }
         }
-        let step = WorkModule::get_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
+        let step = fighter.get_int(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
         if situation != *SITUATION_KIND_GROUND {
             GroundModule::correct(fighter.module_accessor, GroundCorrectKind(*GROUND_CORRECT_KIND_AIR));
             if step == *FIGHTER_FALCO_ILLUSION_STEP_END {
@@ -130,79 +96,47 @@ pub unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> 
                 special_s_change_mot(fighter, Hash40::new("special_air_s_end"));
                 special_s_air_control(fighter);
                 fighter.sub_fighter_cliff_check(GROUND_CLIFF_CHECK_KIND_ALWAYS_BOTH_SIDES.into());
-            }
-            else if step == *FIGHTER_FALCO_ILLUSION_STEP_RUSH {
+            } else if step == *FIGHTER_FALCO_ILLUSION_STEP_RUSH {
                 KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_MOTION_AIR);
                 GroundModule::select_cliff_hangdata(fighter.module_accessor, *FIGHTER_FALCO_CLIFF_HANG_DATA_SPECIAL_S as u32);
                 special_s_change_mot(fighter, Hash40::new("special_air_s"));
                 fighter.sub_fighter_cliff_check(GROUND_CLIFF_CHECK_KIND_ALWAYS.into());
-            }
-            else if step == *FIGHTER_FALCO_ILLUSION_STEP_START {
+            } else if step == *FIGHTER_FALCO_ILLUSION_STEP_START {
                 special_s_air_mot(fighter);
-            }
-        }
-        else {
+            } else {}
+        } else {
             fighter.sub_fighter_cliff_check(GROUND_CLIFF_CHECK_KIND_NONE.into());
             if step == *FIGHTER_FALCO_ILLUSION_STEP_END {
                 KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_GROUND_STOP);
                 GroundModule::correct(fighter.module_accessor, GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND));
                 special_s_change_mot(fighter, Hash40::new("special_s_end"));
                 special_s_air_control(fighter);
-            }
-            else if step == *FIGHTER_FALCO_ILLUSION_STEP_RUSH {
+            } else if step == *FIGHTER_FALCO_ILLUSION_STEP_RUSH {
                 KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_MOTION);
-                sv_kinetic_energy!(
-                    friction_off,
-                    fighter,
-                    FIGHTER_KINETIC_ENERGY_ID_MOTION
-                );
+                sv_kinetic_energy!(friction_off, fighter, FIGHTER_KINETIC_ENERGY_ID_MOTION);
                 GroundModule::correct(fighter.module_accessor, GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND));
-                let motion_mul = WorkModule::get_float(fighter.module_accessor, *FIGHTER_STATUS_WORK_ID_FLOAT_RESERVE_KINETIC_MOTION_SPEED_MUL);
-                sv_kinetic_energy!(
-                    set_speed_mul,
-                    fighter,
-                    FIGHTER_KINETIC_ENERGY_ID_MOTION,
-                    motion_mul
-                );
+                let motion_mul = fighter.get_float(*FIGHTER_STATUS_WORK_ID_FLOAT_RESERVE_KINETIC_MOTION_SPEED_MUL);
+                sv_kinetic_energy!(set_speed_mul, fighter, FIGHTER_KINETIC_ENERGY_ID_MOTION, motion_mul);
                 special_s_change_mot(fighter, Hash40::new("special_s"));
-            }
-            else if step == *FIGHTER_FALCO_ILLUSION_STEP_START {
+            } else if step == *FIGHTER_FALCO_ILLUSION_STEP_START {
                 special_s_ground_mot(fighter);
-            }
+            } else {}
         }
     }
     0.into()
 }
 
 pub unsafe extern "C" fn special_s_change_mot(fighter: &mut L2CFighterCommon, mot: Hash40) {
-    if !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_CONTINUE) {
-        MotionModule::change_motion(
-            fighter.module_accessor,
-            mot,
-            0.0,
-            1.0,
-            false,
-            0.0,
-            false,
-            false
-        );
-        WorkModule::on_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_CONTINUE);
-    }
-    else {
-        MotionModule::change_motion_inherit_frame(
-            fighter.module_accessor,
-            mot,
-            -1.0,
-            1.0,
-            0.0,
-            false,
-            false
-        );
+    if !fighter.is_flag(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_CONTINUE) {
+        MotionModule::change_motion(fighter.module_accessor, mot, 0.0, 1.0, false, 0.0, false, false);
+        fighter.on_flag(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_CONTINUE);
+    } else {
+        MotionModule::change_motion_inherit_frame(fighter.module_accessor, mot, -1.0, 1.0, 0.0, false, false);
     }
 }
 
 pub unsafe extern "C" fn special_s_substatus(fighter: &mut L2CFighterCommon) -> L2CValue {
-    WorkModule::dec_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STOP_Y_FRAME);
+    fighter.dec_int(*FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STOP_Y_FRAME);
     0.into()
 }
 
@@ -315,12 +249,10 @@ pub unsafe extern "C" fn special_s_exec(fighter: &mut L2CFighterCommon) -> L2CVa
         WorkModule::set_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STEP_FORCE_END, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
     }
     else if step == *FIGHTER_FALCO_ILLUSION_STEP_RUSH {
-        // Illusion Shorten implementation
         if fighter.global_table[PAD_FLAG].get_i32() & *FIGHTER_PAD_FLAG_SPECIAL_TRIGGER != 0 {
             WorkModule::on_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_RUSH_FORCE_END);
         }
-        if !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_RUSH_FORCE_END)
-        && !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_HIT_SHIELD) {
+        if !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_RUSH_FORCE_END) {
             return 0.into();
         }
 
@@ -328,9 +260,6 @@ pub unsafe extern "C" fn special_s_exec(fighter: &mut L2CFighterCommon) -> L2CVa
         WorkModule::on_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_CONTINUE);
         special_s_handle_step(fighter);
         WorkModule::set_int(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STEP_FORCE_END, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_INT_STEP);
-        if WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_HIT_SHIELD) {
-            WorkModule::on_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_HIT_SHIELD_TO_END);
-        }
     }
     else if step == *FIGHTER_FALCO_ILLUSION_STEP_END {
         if situation == *SITUATION_KIND_AIR {
@@ -454,13 +383,7 @@ pub unsafe extern "C" fn special_s_handle_step(fighter: &mut L2CFighterCommon) {
                 illusion_end_brake_x,
                 0.0
             );
-            let end_speed_param = if WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_HIT_SHIELD) {
-                hash40("illusion_shield_hit_end_speed_x")
-            }
-            else {
-                hash40("illusion_end_speed_x")
-            };
-            let end_speed = WorkModule::get_param_float(fighter.module_accessor, hash40("param_special_s"), end_speed_param);
+            let end_speed = WorkModule::get_param_float(fighter.module_accessor, hash40("param_special_s"), hash40("illusion_end_speed_x"));
             let lr = PostureModule::lr(fighter.module_accessor);
             sv_kinetic_energy!(
                 set_speed,
@@ -480,13 +403,7 @@ pub unsafe extern "C" fn special_s_handle_step(fighter: &mut L2CFighterCommon) {
                 illusion_end_air_brake_x,
                 0.0
             );
-            let end_speed_param = if WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FALCO_ILLUSION_STATUS_WORK_ID_FLAG_HIT_SHIELD) {
-                hash40("illusion_shield_hit_end_air_speed_x")
-            }
-            else {
-                hash40("illusion_end_air_speed_x")
-            };
-            let end_speed = WorkModule::get_param_float(fighter.module_accessor, hash40("param_special_s"), end_speed_param);
+            let end_speed = WorkModule::get_param_float(fighter.module_accessor, hash40("param_special_s"), hash40("illusion_end_air_speed_x"));
             let lr = PostureModule::lr(fighter.module_accessor);
             sv_kinetic_energy!(
                 set_speed,

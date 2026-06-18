@@ -3,8 +3,14 @@ use super::*;
 use globals::*;
 
 unsafe fn laser_landcancel(boma: &mut BattleObjectModuleAccessor, status_kind: i32, situation_kind: i32, cat2: i32, stick_y: f32) {
-    if [*FIGHTER_STATUS_KIND_SPECIAL_N, *FIGHTER_STATUS_KIND_SPECIAL_LW].contains(&status_kind) {
+    if status_kind == *FIGHTER_STATUS_KIND_SPECIAL_N {
         boma.check_land_cancel(None);
+    }
+}
+
+unsafe fn shine_jump_cancel(fighter: &mut L2CFighterCommon) {
+    if fighter.is_status(*FIGHTER_STATUS_KIND_SPECIAL_LW) {
+        fighter.check_jump_cancel(true);
     }
 }
 
@@ -22,6 +28,7 @@ unsafe fn fastfall_specials(fighter: &mut L2CFighterCommon) {
 
 pub unsafe fn moveset(fighter: &mut L2CFighterCommon, boma: &mut BattleObjectModuleAccessor, id: usize, cat: [i32 ; 4], status_kind: i32, situation_kind: i32, motion_kind: u64, stick_x: f32, stick_y: f32, facing: f32, frame: f32) {
     laser_landcancel(boma, status_kind, situation_kind, cat[1], stick_y);
+    shine_jump_cancel(fighter);
     fastfall_specials(fighter);
 }
 

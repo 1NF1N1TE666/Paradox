@@ -1,40 +1,11 @@
 use super::*;
 
-// FIGHTER_STATUS_KIND_SPECIAL_LW
-
-unsafe extern "C" fn special_lw_init(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FOX_INSTANCE_WORK_ID_FLAG_REFLECTOR_LANDING) {
-        sv_kinetic_energy!(
-            set_speed,
-            fighter,
-            FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-            0.0
-        );
-        sv_kinetic_energy!(
-            set_accel,
-            fighter,
-            FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-            0.0
-        );
-    } else {
-        let speed_y = fighter.get_speed_y(*FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
-        sv_kinetic_energy!(
-            set_speed,
-            fighter,
-            FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-            speed_y.min(0.0) * 0.33
-        );
-    }
-
-    smashline::original_status(Init, fighter, *FIGHTER_STATUS_KIND_SPECIAL_LW)(fighter)
-}
-
 pub unsafe extern "C" fn special_lw_main(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_FOX_INSTANCE_WORK_ID_FLAG_REFLECTOR_LANDING) {
+    if !fighter.is_flag(*FIGHTER_FOX_INSTANCE_WORK_ID_FLAG_REFLECTOR_LANDING) {
         let stop_y_frame = WorkModule::get_param_int(fighter.module_accessor, hash40("param_special_lw"), hash40("reflector_air_stop_y_frame"));
-        WorkModule::set_int(fighter.module_accessor, stop_y_frame, *FIGHTER_FOX_REFLECTOR_STATUS_WORK_ID_INT_STOP_Y_FRAME);
+        fighter.set_int(stop_y_frame, *FIGHTER_FOX_REFLECTOR_STATUS_WORK_ID_INT_STOP_Y_FRAME);
     } else {
-        WorkModule::set_int(fighter.module_accessor, 0, *FIGHTER_FOX_REFLECTOR_STATUS_WORK_ID_INT_STOP_Y_FRAME);
+        fighter.set_int(0, *FIGHTER_FOX_REFLECTOR_STATUS_WORK_ID_INT_STOP_Y_FRAME);
     }
 
     special_lw_motion_helper(fighter);
@@ -42,7 +13,7 @@ pub unsafe extern "C" fn special_lw_main(fighter: &mut L2CFighterCommon) -> L2CV
 }
 
 unsafe extern "C" fn special_lw_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdodge_cancel() {
+    if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdash_cancel() {
         return 0.into();
     }
 
@@ -101,106 +72,6 @@ unsafe extern "C" fn special_lw_motion_helper(fighter: &mut L2CFighterCommon) {
     }
 }
 
-unsafe extern "C" fn special_lw_exec(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if fighter.global_table[SITUATION_KIND] != SITUATION_KIND_AIR {
-        return false.into();
-    }
-
-    let stop_y_frame = fighter.get_param_int("param_special_lw", "reflector_air_stop_y_frame");
-    if stop_y_frame != 0 {
-        let work_stop_y_frame = WorkModule::get_int(fighter.module_accessor, *FIGHTER_FOX_REFLECTOR_STATUS_WORK_ID_INT_STOP_Y_FRAME);
-        KineticModule::enable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
-        if work_stop_y_frame - 1 <= 0 {
-            let reflector_air_accel_y = fighter.get_param_float("param_special_lw", "reflector_air_accel_y");
-            sv_kinetic_energy!(
-                set_accel,
-                fighter,
-                FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-                -reflector_air_accel_y
-            );
-        } else {
-            sv_kinetic_energy!(
-                set_speed,
-                fighter,
-                FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-                0.0
-            );
-            sv_kinetic_energy!(
-                set_accel,
-                fighter,
-                FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-                0.0
-            );
-        }
-
-        WorkModule::set_int(fighter.module_accessor, work_stop_y_frame - 1, *FIGHTER_FOX_REFLECTOR_STATUS_WORK_ID_INT_STOP_Y_FRAME);
-    }
-
-    return false.into();
-}
-
-pub unsafe extern "C" fn special_lw_end(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if ![*FIGHTER_FOX_STATUS_KIND_SPECIAL_LW_LOOP, *FIGHTER_FOX_STATUS_KIND_SPECIAL_LW_HIT].contains(&StatusModule::status_kind_next(fighter.module_accessor)) {
-        WorkModule::set_flag(fighter.module_accessor, fighter.global_table[SITUATION_KIND] == SITUATION_KIND_AIR, *FIGHTER_FOX_INSTANCE_WORK_ID_FLAG_REFLECTOR_LANDING);
-    }
-
-    0.into()
-}
-
-unsafe extern "C" fn special_lw_loop_exec(fighter: &mut L2CFighterCommon) -> L2CValue {
-    let turn_stick_x = WorkModule::get_param_float(fighter.module_accessor, hash40("common"), hash40("turn_stick_x"));
-
-    if fighter.global_table[STICK_X].get_f32() * PostureModule::lr(fighter.module_accessor) <= turn_stick_x {
-        PostureModule::reverse_lr(fighter.module_accessor);
-        PostureModule::update_rot_y_lr(fighter.module_accessor);
-    }
-
-    if fighter.global_table[SITUATION_KIND] != SITUATION_KIND_AIR {
-        return false.into();
-    }
-
-    let stop_y_frame = fighter.get_param_int("param_special_lw", "reflector_air_stop_y_frame");
-    if stop_y_frame != 0 {
-        let work_stop_y_frame = WorkModule::get_int(fighter.module_accessor, *FIGHTER_FOX_REFLECTOR_STATUS_WORK_ID_INT_STOP_Y_FRAME);
-
-        KineticModule::enable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
-
-        if work_stop_y_frame - 1 <= 0 {
-            let reflector_air_accel_y = fighter.get_param_float("param_special_lw", "reflector_air_accel_y");
-            sv_kinetic_energy!(
-                set_accel,
-                fighter,
-                FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-                -reflector_air_accel_y
-            );
-        } else {
-            sv_kinetic_energy!(
-                set_speed,
-                fighter,
-                FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-                0.0
-            );
-            sv_kinetic_energy!(
-                set_accel,
-                fighter,
-                FIGHTER_KINETIC_ENERGY_ID_GRAVITY,
-                0.0
-            );
-        }
-        WorkModule::set_int(fighter.module_accessor, work_stop_y_frame - 1, *FIGHTER_FOX_REFLECTOR_STATUS_WORK_ID_INT_STOP_Y_FRAME);
-    }
-
-    return false.into();
-}
-
-pub unsafe extern "C" fn special_lw_loop_end(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if ![*FIGHTER_FOX_STATUS_KIND_SPECIAL_LW_END, *FIGHTER_FOX_STATUS_KIND_SPECIAL_LW_HIT].contains(&StatusModule::status_kind_next(fighter.module_accessor)) {
-        WorkModule::set_flag(fighter.module_accessor, fighter.global_table[SITUATION_KIND] == SITUATION_KIND_AIR, *FIGHTER_FOX_INSTANCE_WORK_ID_FLAG_REFLECTOR_LANDING);
-    }
-
-    0.into()
-}
-
 pub unsafe extern "C" fn special_lw_hit_main(fighter: &mut L2CFighterCommon) -> L2CValue {
     ControlModule::reset_flick_x(fighter.module_accessor);
     ControlModule::reset_flick_y(fighter.module_accessor);
@@ -211,7 +82,7 @@ pub unsafe extern "C" fn special_lw_hit_main(fighter: &mut L2CFighterCommon) -> 
 
 unsafe extern "C" fn special_lw_hit_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
     if MotionModule::is_end(fighter.module_accessor) {
-        if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdodge_cancel() {
+        if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdash_cancel() {
             return 0.into();
         }
         
@@ -271,13 +142,6 @@ unsafe extern "C" fn special_lw_hit_motion_helper(fighter: &mut L2CFighterCommon
 }
 
 pub fn install(agent: &mut Agent) {
-    agent.status(Init, *FIGHTER_STATUS_KIND_SPECIAL_LW, special_lw_init);
     agent.status(Main, *FIGHTER_STATUS_KIND_SPECIAL_LW, special_lw_main);
-    agent.status(Exec, *FIGHTER_STATUS_KIND_SPECIAL_LW, special_lw_exec);
-    agent.status(End, *FIGHTER_STATUS_KIND_SPECIAL_LW, special_lw_end);
-    agent.status(Exec, *FIGHTER_FOX_STATUS_KIND_SPECIAL_LW_LOOP, special_lw_loop_exec);
-    agent.status(End, *FIGHTER_FOX_STATUS_KIND_SPECIAL_LW_LOOP, special_lw_loop_end);
-    agent.status(Exec, *FIGHTER_FOX_STATUS_KIND_SPECIAL_LW_END, special_lw_exec);
     agent.status(Main, *FIGHTER_FOX_STATUS_KIND_SPECIAL_LW_HIT, special_lw_hit_main);
-    agent.status(Exec, *FIGHTER_FOX_STATUS_KIND_SPECIAL_LW_HIT, special_lw_exec);
 }

@@ -1,5 +1,4 @@
 use super::*;
-use utils::consts::vars::brave::instance;
 utils::import_noreturn!(common::opff::fighter_common_opff);
 
 pub extern "C" fn brave_frame_wrapper(fighter: &mut L2CFighterCommon) {

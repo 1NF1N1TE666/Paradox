@@ -94,14 +94,18 @@ unsafe fn change_status_request_from_script_hook(boma: &mut BattleObjectModuleAc
 
     if boma.is_fighter() {
         if [
-            *FIGHTER_STATUS_KIND_PASSIVE_WALL, 
+            *FIGHTER_STATUS_KIND_PASSIVE_WALL,
             *FIGHTER_STATUS_KIND_PASSIVE_WALL_JUMP,
             *FIGHTER_STATUS_KIND_PASSIVE_CEIL,
-            *FIGHTER_STATUS_KIND_CLIFF_ATTACK,
-            *FIGHTER_STATUS_KIND_DOWN_STAND_ATTACK,
             *FIGHTER_STATUS_KIND_CATCH_ATTACK
         ].contains(&next_status) {
             return 0;
+        }
+
+        if next_status == *FIGHTER_STATUS_KIND_JUMP_SQUAT {
+            if boma.is_cat_flag(Cat1::AirEscape) && !boma.is_cat_flag(Cat1::AttackN) {
+                VarModule::on_flag(boma.object(), vars::common::instance::ENABLE_AIR_ESCAPE_JUMPSQUAT);
+            }
         }
 
         if boma.is_status(*FIGHTER_STATUS_KIND_DAMAGE_AIR)
@@ -111,29 +115,21 @@ unsafe fn change_status_request_from_script_hook(boma: &mut BattleObjectModuleAc
         }
 
         if [
-            *FIGHTER_STATUS_KIND_PASSIVE, 
-            *FIGHTER_STATUS_KIND_PASSIVE_FB
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_D
         ].contains(&next_status) {
             next_status = *FIGHTER_STATUS_KIND_DOWN;
         }
 
-        if next_status == *FIGHTER_STATUS_KIND_JUMP_SQUAT {
-            if boma.is_cat_flag(Cat1::AirEscape) && !boma.is_cat_flag(Cat1::AttackN) {
-                VarModule::on_flag(boma.object(), vars::common::instance::ENABLE_AIR_ESCAPE_JUMPSQUAT);
-            }
+        if [
+            *FIGHTER_STATUS_KIND_ESCAPE,
+            *FIGHTER_STATUS_KIND_ESCAPE_F,
+            *FIGHTER_STATUS_KIND_ESCAPE_B,
+        ].contains(&next_status) {
+            clear_buffer = true;
         }
 
-        VarModule::set_int(
-            boma.object(),
-            vars::common::instance::PREV_STATUS_TRANSITION_FRAME,
-            util::get_fighter_common_from_accessor(boma).global_table[CURRENT_FRAME].get_i32()
-        );
-
-        VarModule::set_flag(
-            boma.object(),
-            vars::common::instance::WAS_PREV_STATUS_CANCELABLE,
-            CancelModule::is_enable_cancel(boma) || (boma.is_status(*FIGHTER_STATUS_KIND_LANDING) && WorkModule::is_flag(boma, *FIGHTER_STATUS_LANDING_FLAG_STIFF_CANCEL_CONT))
-        );
+        VarModule::set_int(boma.object(), vars::common::instance::PREV_STATUS_TRANSITION_FRAME, util::get_fighter_common_from_accessor(boma).global_table[CURRENT_FRAME].get_i32());
+        VarModule::set_flag(boma.object(), vars::common::instance::WAS_PREV_STATUS_CANCELABLE, CancelModule::is_enable_cancel(boma) || (boma.is_status(*FIGHTER_STATUS_KIND_LANDING) && WorkModule::is_flag(boma, *FIGHTER_STATUS_LANDING_FLAG_STIFF_CANCEL_CONT)));
     }
 
     original!()(boma, next_status, clear_buffer)

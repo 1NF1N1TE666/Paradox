@@ -4,7 +4,6 @@ use crate::globals::*;
 pub mod attack_and_knockback;
 pub mod collision;
 pub mod energy;
-pub mod iceclimber;
 pub mod jumps;
 pub mod kinetic;
 pub mod momentum_transfer;
@@ -18,7 +17,6 @@ pub fn install() {
     attack_and_knockback::install();
     collision::install();
     energy::install();
-    iceclimber::install();
     jumps::install();
     kinetic::install();
     momentum_transfer::install();

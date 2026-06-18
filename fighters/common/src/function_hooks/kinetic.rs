@@ -1,12 +1,6 @@
 use super::*;
 use globals::*;
 
-//=================================================================
-//== KineticModule::change_kinetic
-//== Note: Double jump cancels for Ness, Lucas, and Mewtwo
-//== Note: This actually does not do the above, why is this even here
-//== Note: This changes the kinetic energy, not the animation
-//=================================================================
 #[skyline::hook(replace=KineticModule::change_kinetic)]
 unsafe fn change_kinetic_hook(boma: &mut BattleObjectModuleAccessor, kinetic_type: i32) -> i32 {
     let mut kinetic_type_new = kinetic_type;

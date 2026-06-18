@@ -1,7 +1,6 @@
 #![allow(improper_ctypes_definitions)]
 
 use super::*;
-mod control;
 mod motion;
 
 #[repr(C)]
@@ -154,6 +153,5 @@ impl KineticEnergy {
 }
 
 pub fn install() {
-    control::install();
     motion::install();
 }

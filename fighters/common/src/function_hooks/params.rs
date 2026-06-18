@@ -24,16 +24,167 @@ pub unsafe fn get_param_float_replace(module_accessor: u64, param_type: u64, par
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
 
     if boma_reference.is_fighter() {
+        if param_type == hash40("common") {
+            if param_hash == hash40("ground_speed_limit") {
+                return WorkModule::get_param_float(boma_reference, hash40("run_speed_max"), 0);
+            }
+            if param_hash == hash40("air_speed_x_limit") {
+                return if boma_reference.kind() == *FIGHTER_KIND_LITTLEMAC {
+                    WorkModule::get_param_float(boma_reference, hash40("run_speed_max"), 0)
+                } else if WorkModule::get_param_float(boma_reference, hash40("jump_speed_x_max"), 0) > WorkModule::get_param_float(boma_reference, hash40("air_speed_x_stable"), 0) {
+                    WorkModule::get_param_float(boma_reference, hash40("jump_speed_x_max"), 0)
+                } else {
+                    WorkModule::get_param_float(boma_reference, hash40("air_speed_x_stable"), 0)
+                };
+            }
+            if param_hash == hash40("air_speed_y_limit") {
+                return WorkModule::get_param_float(boma_reference, hash40("dive_speed_y"), 0);
+            }
+        }
         if boma_reference.kind() == *FIGHTER_KIND_IKE {
             if param_type == hash40("param_special_lw") {
                 if param_hash == hash40("special_lw_attack_power_limit") {
                     if VarModule::is_flag(boma_reference.object(), vars::ike::instance::STORED_AETHER) {
-                        return 25.0;
+                        return 24.0;
                     }
                 }
             }
         }
-    } else if boma_reference.is_weapon() {} else {}
+        if boma_reference.kind() == *FIGHTER_KIND_SAMUS {
+            if param_type == hash40("ground_brake") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 0.03;
+                }
+            }
+            if param_type == hash40("dash_speed") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 3.0;
+                }
+            }
+            if param_type == hash40("run_accel_mul") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 3.0;
+                }
+            }
+            if param_type == hash40("run_speed_max") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 3.0;
+                }
+            }
+            if param_type == hash40("jump_speed_x_max") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 3.0;
+                }
+            }
+            if param_type == hash40("jump_initial_y") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 15.0;
+                }
+            }
+            if param_type == hash40("jump_y") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 30.0;
+                }
+            }
+            if param_type == hash40("mini_jump_y") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 15.0;
+                }
+            }
+            if param_type == hash40("jump_aerial_y") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 30.0;
+                }
+            }
+            if param_type == hash40("air_accel_x_mul") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 0.15;
+                }
+            }
+            if param_type == hash40("air_speed_x_stable") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 3.0;
+                }
+            }
+            if param_type == hash40("air_brake_x") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 0.03;
+                }
+            }
+            if param_type == hash40("air_accel_y") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 0.15;
+                }
+            }
+            if param_type == hash40("air_speed_y_stable") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 3.0;
+                }
+            }
+            if param_type == hash40("damage_fly_top_air_accel_y") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 0.15;
+                }
+            }
+            if param_type == hash40("damage_fly_top_speed_y_stable") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 3.0;
+                }
+            }
+            if param_type == hash40("air_brake_y") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 0.03;
+                }
+            }
+            if param_type == hash40("dive_speed_y") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 6.0;
+                }
+            }
+            if param_type == hash40("weight") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 60.0;
+                }
+            }
+            if param_type == hash40("cliff_jump_speed_x") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 3.0;
+                }
+            }
+            if param_type == hash40("cliff_jump_y") {
+                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+                    return 30.0;
+                }
+            }
+            if param_type == hash40("param_special_n") {
+                if param_hash == hash40("cshot_charge_frame") {
+                    if VarModule::is_flag(boma_reference.object(), vars::samus::instance::ICE_MODE) {
+                        return 60.0;
+                    }
+                }
+            }
+        }
+    } else if boma_reference.is_weapon() {
+        if boma_reference.kind() == *WEAPON_KIND_SAMUS_BOMB {
+            if param_type == hash40("param_bomb") {
+                if param_hash == hash40("firing_speed_y") {
+                    if VarModule::is_flag(boma_reference.get_owner_boma().object(), vars::samus::instance::ICE_MODE) {
+                        return 1.0;
+                    }
+                }
+                if param_hash == hash40("accele_gravity") {
+                    if VarModule::is_flag(boma_reference.get_owner_boma().object(), vars::samus::instance::ICE_MODE) {
+                        return 0.025;
+                    }
+                }
+                if param_hash == hash40("0x1c309814d2") {
+                    if VarModule::is_flag(boma_reference.get_owner_boma().object(), vars::samus::instance::ICE_MODE) {
+                        return 1.0;
+                    }
+                }
+            }
+        }
+    } else {}
 
     original!()(module_accessor, param_type, param_hash)
 }
@@ -44,7 +195,22 @@ pub unsafe fn get_param_int_replace(module_accessor: u64, param_type: u64, param
 	let boma_reference = &mut *boma;
     let entry_id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
 
-    if boma_reference.is_fighter() {} else if boma_reference.is_weapon() {} else {}
+    if boma_reference.is_fighter() {} else if boma_reference.is_weapon() {
+        if boma_reference.kind() == *WEAPON_KIND_SAMUS_BOMB {
+            if param_type == hash40("param_bomb") {
+                if param_hash == hash40("life") {
+                    if VarModule::is_flag(boma_reference.get_owner_boma().object(), vars::samus::instance::ICE_MODE) {
+                        return 120;
+                    }
+                }
+                if param_hash == hash40("life_flash") {
+                    if VarModule::is_flag(boma_reference.get_owner_boma().object(), vars::samus::instance::ICE_MODE) {
+                        return 90;
+                    }
+                }
+            }
+        }
+    } else {}
 
     original!()(module_accessor, param_type, param_hash)
 }

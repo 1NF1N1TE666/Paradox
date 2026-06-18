@@ -37,9 +37,57 @@ unsafe fn laser_landcancel(boma: &mut BattleObjectModuleAccessor, status_kind: i
     }
 }
 
-unsafe fn special_lw(fighter: &mut smash::lua2cpp::L2CFighterCommon) {
+unsafe fn special_hi(fighter: &mut L2CFighterCommon) {
+    if fighter.is_status(*FIGHTER_LUCARIO_STATUS_KIND_SPECIAL_HI_RUSH_END)
+    && fighter.is_motion_one_of(&[
+        Hash40::new("special_hi_end"),
+        Hash40::new("special_air_hi_end")
+    ]) {
+        if fighter.is_cat_flag(Cat1::SpecialN) {
+            fighter.change_status_req(*FIGHTER_STATUS_KIND_SPECIAL_N, false);
+        }
+        if fighter.is_cat_flag(Cat1::SpecialS) {
+            fighter.change_status_req(*FIGHTER_STATUS_KIND_SPECIAL_S, false);
+        }
+        if fighter.is_cat_flag(Cat1::SpecialLw) {
+            fighter.change_status_req(*FIGHTER_STATUS_KIND_SPECIAL_LW, false);
+        }
+        if fighter.is_situation(*SITUATION_KIND_GROUND) {
+            if fighter.is_cat_flag(Cat1::Catch) {
+                fighter.change_status_req(*FIGHTER_STATUS_KIND_CATCH, true);
+            }
+            if fighter.is_cat_flag(Cat1::AttackS4) {
+                fighter.change_status_req(*FIGHTER_STATUS_KIND_ATTACK_S4_START, true);
+            }
+            if fighter.is_cat_flag(Cat1::AttackHi4) {
+                fighter.change_status_req(*FIGHTER_STATUS_KIND_ATTACK_HI4_START, true);
+            }
+            if fighter.is_cat_flag(Cat1::AttackLw4) {
+                fighter.change_status_req(*FIGHTER_STATUS_KIND_ATTACK_LW4_START, true);
+            }
+            if fighter.is_cat_flag(Cat1::AttackS3) {
+                fighter.change_status_req(*FIGHTER_STATUS_KIND_ATTACK_S3, false);
+            }
+            if fighter.is_cat_flag(Cat1::AttackHi3) {
+                fighter.change_status_req(*FIGHTER_STATUS_KIND_ATTACK_HI3, false);
+            }
+            if fighter.is_cat_flag(Cat1::AttackLw3) {
+                fighter.change_status_req(*FIGHTER_STATUS_KIND_ATTACK_LW3, false);
+            }
+            if fighter.is_cat_flag(Cat1::AttackN) {
+                fighter.change_status_req(*FIGHTER_STATUS_KIND_ATTACK, true);
+            }
+        } else {
+            if fighter.get_aerial() != None {
+                fighter.change_status_req(*FIGHTER_STATUS_KIND_ATTACK_AIR, true);
+            }
+        }
+    }
+}
+
+unsafe fn special_lw(fighter: &mut L2CFighterCommon) {
     if fighter.is_status(*FIGHTER_STATUS_KIND_SPECIAL_LW) {
-        fighter.change_status_req(*FIGHTER_LUCARIO_STATUS_KIND_SPECIAL_LW_APPEAR, false);
+        fighter.change_status_req(*FIGHTER_LUCARIO_STATUS_KIND_SPECIAL_LW_APPEAR, true);
     }
     
     if fighter.is_status_one_of(&[*FIGHTER_LUCARIO_STATUS_KIND_SPECIAL_LW_APPEAR, *FIGHTER_LUCARIO_STATUS_KIND_SPECIAL_LW_END]) {
@@ -165,6 +213,7 @@ pub unsafe fn lucario_frame(fighter: &mut smash::lua2cpp::L2CFighterCommon) {
 pub unsafe fn moveset(fighter: &mut L2CFighterCommon, boma: &mut BattleObjectModuleAccessor, id: usize, cat: [i32 ; 4], status_kind: i32, situation_kind: i32, motion_kind: u64, stick_x: f32, stick_y: f32, facing: f32, frame: f32) {
     bugfix(boma);
     laser_landcancel(boma, status_kind, situation_kind, cat[1], stick_y);
+    special_hi(fighter);
     special_lw(fighter);
     fastfall_specials(fighter);
 }

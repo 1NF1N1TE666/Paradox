@@ -49,7 +49,7 @@ pub unsafe fn quote_on_quote_air(boma: &mut BattleObjectModuleAccessor) {
 
     if boma.stick_y() >= 0.0
     && boma.is_button_on(Buttons::Jump) 
-    && boma.is_status_one_of(&[
+    && (boma.is_status_one_of(&[
         *FIGHTER_STATUS_KIND_WAIT,
         *FIGHTER_STATUS_KIND_SQUAT,
         *FIGHTER_STATUS_KIND_SQUAT_B,
@@ -65,14 +65,14 @@ pub unsafe fn quote_on_quote_air(boma: &mut BattleObjectModuleAccessor) {
         *FIGHTER_STATUS_KIND_TURN_DASH,
         *FIGHTER_STATUS_KIND_TURN_RUN,
         *FIGHTER_STATUS_KIND_TURN_RUN_BRAKE,
-    ]) {
+    ]) || AttackModule::is_infliction_status(boma, *COLLISION_KIND_MASK_ALL)) {
         GroundModule::correct(boma, GroundCorrectKind(*GROUND_CORRECT_KIND_AIR));
-        PostureModule::add_pos_2d(boma, &Vector2f{ x: 0.0, y: 1.5 });
+        PostureModule::add_pos_2d(boma, &Vector2f{ x: 0.0, y: 0.75 });
     }
 
     if boma.stick_y() <= -0.0
     && boma.is_button_on(Buttons::Jump)
-    && boma.is_status_one_of(&[
+    && (boma.is_status_one_of(&[
         *FIGHTER_STATUS_KIND_WAIT,
         *FIGHTER_STATUS_KIND_SQUAT,
         *FIGHTER_STATUS_KIND_SQUAT_B,
@@ -88,11 +88,11 @@ pub unsafe fn quote_on_quote_air(boma: &mut BattleObjectModuleAccessor) {
         *FIGHTER_STATUS_KIND_TURN_DASH,
         *FIGHTER_STATUS_KIND_TURN_RUN,
         *FIGHTER_STATUS_KIND_TURN_RUN_BRAKE,
-    ]) {
-        PostureModule::add_pos_2d(boma, &Vector2f{ x: 0.0, y: -1.5 });
+    ]) || AttackModule::is_infliction_status(boma, *COLLISION_KIND_MASK_ALL)) {
+        PostureModule::add_pos_2d(boma, &Vector2f{ x: 0.0, y: -0.75 });
     }
 
-    if WorkModule::is_flag(boma, *FIGHTER_LITTLEMAC_INSTANCE_WORK_ID_FLAG_DISABLE_SPECIAL_S) {
+    if !AttackModule::is_infliction_status(boma, *COLLISION_KIND_MASK_ALL) {
         WorkModule::off_flag(boma, *FIGHTER_LITTLEMAC_INSTANCE_WORK_ID_FLAG_DISABLE_SPECIAL_S);
     }
 }

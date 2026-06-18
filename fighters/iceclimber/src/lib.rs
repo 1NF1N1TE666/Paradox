@@ -5,11 +5,6 @@
 pub mod acmd;
 
 pub mod opff;
-pub mod status;
-
-// articles
-
-mod waveclone;
 
 use smash::{
     lib::{
@@ -47,16 +42,9 @@ pub fn install() {
     let popo = &mut Agent::new("popo");
     let nana = &mut Agent::new("nana");
 
-    // acmd::install(popo);
-    // acmd::install(nana);
-
     opff::install_popo(popo);
     opff::install_nana(nana);
 
     popo.install();
     nana.install();
-
-    // status::install();
-
-    // smashline::clone_weapon("cloud", *WEAPON_KIND_CLOUD_WAVE, "popo", "waveclone", true);
 }

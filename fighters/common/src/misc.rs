@@ -30,8 +30,6 @@ pub unsafe extern "C" fn opff(fighter: &mut L2CFighterCommon) {
     fighter.check_paradox_dodge();
     fighter.check_hitfall();
 
-    fighter.unable_transition_term(*FIGHTER_STATUS_TRANSITION_TERM_ID_DAMAGE_FLY_REFLECT_D);
-
     if fighter.is_status_one_of(&[
         *FIGHTER_STATUS_KIND_DEAD,
         *FIGHTER_STATUS_KIND_REBIRTH,
@@ -80,20 +78,32 @@ pub unsafe extern "C" fn paradox_drop(fighter: &mut L2CFighterCommon) {
 }
 
 pub unsafe extern "C" fn paradox_cancel(fighter: &mut L2CFighterCommon) {
-    if AttackModule::is_infliction_status(fighter.module_accessor, *COLLISION_KIND_MASK_ALL) {
-        fighter.check_dash_cancel();
+    if AttackModule::is_infliction_status(fighter.module_accessor, *COLLISION_KIND_MASK_ALL)
+    && !fighter.is_status_one_of(&[
+        *FIGHTER_STATUS_KIND_CATCH,
+        *FIGHTER_STATUS_KIND_CATCH_DASH,
+        *FIGHTER_STATUS_KIND_CATCH_TURN,
+        *FIGHTER_STATUS_KIND_CATCH_PULL,
+        *FIGHTER_STATUS_KIND_CATCH_DASH_PULL,
+        *FIGHTER_STATUS_KIND_CATCH_WAIT,
+        *FIGHTER_STATUS_KIND_THROW,
+        *FIGHTER_LUCARIO_STATUS_KIND_SPECIAL_S_THROW,
+        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_DRAG,
+        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_DRAG_F,
+        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_DRAG_CLIFF,
+        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_DRAG_WALL,
+        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_DRAG_JUMP,
+        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_FALL,
+        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_FALL_JUMP,
+    ]) {
         if fighter.get_num_used_jumps() == fighter.get_jump_count_max() {
-            WorkModule::dec_int(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_INT_JUMP_COUNT);
+            fighter.dec_int(*FIGHTER_INSTANCE_WORK_ID_INT_JUMP_COUNT);
         }
-        if !fighter.is_status_one_of(&[
-            *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_DRAG,
-            *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_DRAG_F,
-        ]) {
-            fighter.check_jump_cancel(true);
-        }
-        WorkModule::off_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_DISABLE_ESCAPE_AIR);
-        fighter.check_airdodge_cancel();
-        fighter.check_magicseries();
+        fighter.off_flag(*FIGHTER_INSTANCE_WORK_ID_FLAG_DISABLE_ESCAPE_AIR);
+        fighter.check_dash_cancel();
+        fighter.check_jump_cancel(true);
+        fighter.check_airdash_cancel();
+        fighter.check_special_cancel();
     }
 }
 

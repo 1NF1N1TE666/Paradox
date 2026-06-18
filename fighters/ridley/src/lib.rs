@@ -63,7 +63,6 @@ use smashline::*;
 #[macro_use] extern crate smash_script;
 
 pub fn install() {
-    smashline::update_weapon_count(*WEAPON_KIND_RIDLEY_BREATH, 10);
     let agent = &mut Agent::new("ridley");
     acmd::install(agent);
     opff::install(agent);

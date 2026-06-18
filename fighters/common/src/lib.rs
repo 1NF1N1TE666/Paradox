@@ -42,19 +42,6 @@ extern "C" fn common_init(fighter: &mut L2CFighterCommon) {
     VarModule::off_flag(fighter.battle_object, vars::common::instance::IS_INIT);
 }
 
-extern "C" fn fighter_reset(fighter: &mut L2CFighterCommon) {
-    unsafe {
-        let ratio =
-            (WorkModule::get_param_float(fighter.module_accessor, hash40("jump_speed_x_max"), 0)
-                / WorkModule::get_param_float(fighter.module_accessor, hash40("run_speed_max"), 0));
-        VarModule::set_float(
-            fighter.battle_object,
-            vars::common::instance::JUMP_SPEED_RATIO,
-            ratio,
-        );
-    }
-}
-
 pub fn install() {
     djc::install();
     misc::install();
@@ -64,6 +51,5 @@ pub fn install() {
 
     Agent::new("fighter")
         .on_start(common_init)
-        .on_start(fighter_reset)
         .install();
 }

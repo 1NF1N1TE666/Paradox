@@ -5,12 +5,12 @@ use globals::*;
 
 unsafe fn stored_aether(fighter: &mut L2CFighterCommon) {
     if VarModule::is_flag(fighter.object(), vars::ike::instance::STORED_AETHER) {
-        if VarModule::get_int(fighter.object(), vars::ike::instance::STORED_AETHER_DAMAGE_TIMER) == 0 {
-            DamageModule::add_damage(fighter.module_accessor, 1.0, 0);
-            VarModule::set_int(fighter.object(), vars::ike::instance::STORED_AETHER_DAMAGE_TIMER, 12);
-        } else {
-            VarModule::dec_int(fighter.object(), vars::ike::instance::STORED_AETHER_DAMAGE_TIMER);
-        }
+        // if VarModule::get_int(fighter.object(), vars::ike::instance::STORED_AETHER_DAMAGE_TIMER) == 0 {
+        //     DamageModule::add_damage(fighter.module_accessor, 1.0, 0);
+        //     VarModule::set_int(fighter.object(), vars::ike::instance::STORED_AETHER_DAMAGE_TIMER, 12);
+        // } else {
+        //     VarModule::dec_int(fighter.object(), vars::ike::instance::STORED_AETHER_DAMAGE_TIMER);
+        // }
 
         if fighter.is_status_one_of(&[
             *FIGHTER_STATUS_KIND_ATTACK,
@@ -72,18 +72,6 @@ unsafe fn stored_aether(fighter: &mut L2CFighterCommon) {
 
         if fighter.is_status(*FIGHTER_STATUS_KIND_SPECIAL_LW) {
             fighter.change_status_req(*FIGHTER_IKE_STATUS_KIND_SPECIAL_LW_HIT, false);
-        }
-    }
-}
-
-unsafe fn aether_drift(boma: &mut BattleObjectModuleAccessor) {
-    if [*FIGHTER_STATUS_KIND_SPECIAL_HI, *FIGHTER_IKE_STATUS_KIND_SPECIAL_HI_2].contains(&boma.status()) {
-        if !boma.is_situation(*SITUATION_KIND_AIR) || boma.is_in_hitlag() {
-            return;
-        }
-        if boma.stick_x() != 0.0 {
-            let motion_vec = x_motion_vec(0.5, boma.stick_x());
-            KineticModule::add_speed_outside(boma, *KINETIC_OUTSIDE_ENERGY_TYPE_WIND_NO_ADDITION, &motion_vec);
         }
     }
 }
@@ -396,7 +384,6 @@ unsafe fn fastfall_specials(fighter: &mut L2CFighterCommon) {
 
 pub unsafe fn moveset(fighter: &mut smash::lua2cpp::L2CFighterCommon, boma: &mut BattleObjectModuleAccessor) {
     stored_aether(fighter);
-    aether_drift(boma);
     quickdraw_attack_arm_bend(boma);
     jab_lean(boma);
     grab_lean(boma);

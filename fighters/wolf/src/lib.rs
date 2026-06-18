@@ -7,6 +7,10 @@
 pub mod acmd;
 
 pub mod opff;
+pub mod status;
+
+mod blaster_bullet;
+mod illusion;
 
 use smash::{
     lib::{
@@ -42,6 +46,11 @@ use smashline::*;
 
 pub fn install() {
     let agent = &mut Agent::new("wolf");
+    acmd::install(agent);
     opff::install(agent);
+    status::install(agent);
     agent.install();
+
+    blaster_bullet::install();
+    illusion::install();
 }
