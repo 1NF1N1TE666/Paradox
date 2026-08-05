@@ -103,7 +103,7 @@ unsafe extern "C" fn special_lw_pogo_main(fighter: &mut L2CFighterCommon) -> L2C
     KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_FALL);
     if fighter.global_table[SITUATION_KIND].get_i32() == *SITUATION_KIND_GROUND {
         MotionModule::change_motion(fighter.module_accessor, Hash40::new("special_lw_pogo"), 0.0, 1.0, false, 0.0, false, false);
-        sv_kinetic_energy!(set_speed, fighter, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY, 2);
+        sv_kinetic_energy!(set_speed, fighter, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY, 2.5);
     } else {
         MotionModule::change_motion(fighter.module_accessor, Hash40::new("special_air_lw_pogo"), 0.0, 1.0, false, 0.0, false, false);
     }
@@ -147,8 +147,8 @@ pub unsafe fn special_lw_pogo_main_loop(fighter: &mut L2CFighterCommon) -> L2CVa
         let ground_hit_rot = &mut Vector2f{x: 0.0, y: 0.0};
         let pos_start_x = offset_x_prev+pos_x_global;
         let pos_start_y = offset_y_prev+pos_y_global;
-        let offset_end_x = (v3f_tail_pos.x-pos_start_x) +6.0*lr;
-        let offset_end_y = (v3f_tail_pos.y-pos_start_y) -9.0;
+        let offset_end_x = (v3f_tail_pos.x-pos_start_x) + 6.0 * lr;
+        let offset_end_y = (v3f_tail_pos.y-pos_start_y) - 9.0;
         if GroundModule::ray_check_hit_pos_normal(
             fighter.module_accessor,
             &Vector2f{x:pos_start_x, y: pos_start_y},
@@ -163,8 +163,8 @@ pub unsafe fn special_lw_pogo_main_loop(fighter: &mut L2CFighterCommon) -> L2CVa
             SoundModule::play_se(fighter.module_accessor, Hash40::new("se_ridley_special_h03"), true, false, false, false, enSEType(0));
             CameraModule::req_quake(fighter.module_accessor, *CAMERA_QUAKE_KIND_S);
             ControlModule::set_rumble(fighter.module_accessor, Hash40::new("rbkind_impact"), 0, false, 0);
-            let bounce_speed_max = 4.0;
-            let bounce_speed_min = 2.0;
+            let bounce_speed_max = 2.5;
+            let bounce_speed_min = 2.5;
             let speed_y = bounce_speed_max - (((pos_y_global - ground_hit_pos.y).clamp(0.0, 30.0) / 30.0) * (bounce_speed_max - bounce_speed_min));
             let speed_x = lr*KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
             sv_kinetic_energy!(set_speed, fighter, *FIGHTER_KINETIC_ENERGY_ID_MOTION, speed_x);
@@ -173,7 +173,7 @@ pub unsafe fn special_lw_pogo_main_loop(fighter: &mut L2CFighterCommon) -> L2CVa
             VarModule::off_flag(fighter.object(), vars::ridley::status::SPECIAL_LW_POGO_CHECK_BOUNCE);
             let speed_x = lr*KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
             sv_kinetic_energy!(set_speed, fighter, *FIGHTER_KINETIC_ENERGY_ID_MOTION, speed_x);
-            sv_kinetic_energy!(set_speed, fighter, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY, 2);
+            sv_kinetic_energy!(set_speed, fighter, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY, 2.5);
         }
     }
 

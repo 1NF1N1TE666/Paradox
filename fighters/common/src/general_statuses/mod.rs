@@ -313,7 +313,6 @@ pub unsafe fn sys_line_status_system_control_hook(fighter: &mut L2CFighterBase) 
     if VarModule::has_var_module(fighter.battle_object)
     && VarModule::is_flag(fighter.battle_object, vars::common::instance::CHECK_CHANGE_MOTION_ONLY) {
         VarModule::off_flag(fighter.battle_object, vars::common::instance::CHECK_CHANGE_MOTION_ONLY);
-        VarModule::on_flag(fighter.battle_object, vars::common::instance::FLUSH_EFFECT_ACMD);
         let situation_kind = StatusModule::situation_kind(fighter.module_accessor);
         fighter.global_table[SITUATION_KIND].assign(&L2CValue::I32(situation_kind));
         fighter.global_table[0xD].assign(&L2CValue::Bool(false));

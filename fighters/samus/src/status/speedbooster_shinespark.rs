@@ -3,7 +3,7 @@ use super::*;
 pub unsafe fn speedbooster_on(fighter: &mut L2CFighterCommon) {
     shinespark_off(fighter);
     VarModule::on_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON);
-    VarModule::set_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER, 20);
+    VarModule::set_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER, 30);
     VarModule::set_int(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_EFFECT_TIMER, 8);
     FLASH(fighter, 0.1, 0.2, 3.5, 0.1);
     BURN_COLOR(fighter, 0.4, 1.1, 6.0, 0.5);
@@ -98,7 +98,7 @@ pub unsafe fn shinespark_end(fighter: &mut L2CFighterCommon) {
     sv_kinetic_energy!(clear_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_ENV_WIND);
     KineticModule::enable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_ENV_WIND);
     sv_kinetic_energy!(set_stable_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, 0.0, 0.0);
-    sv_kinetic_energy!(set_brake, fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, 0.25);
+    sv_kinetic_energy!(set_brake, fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, 0.075);
 }
 
 pub unsafe fn shinespark_air_end(fighter: &mut L2CFighterCommon) {
@@ -110,17 +110,17 @@ pub unsafe fn shinespark_air_end(fighter: &mut L2CFighterCommon) {
     let air_speed_x_stable = WorkModule::get_param_float(fighter.module_accessor, hash40("air_speed_x_stable"), 0);
     let air_speed_y_stable = WorkModule::get_param_float(fighter.module_accessor, hash40("air_speed_y_stable"), 0);
     sv_kinetic_energy!(set_stable_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, air_speed_x_stable, air_speed_y_stable);
-    sv_kinetic_energy!(set_brake, fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, 0.3, 0.3);
-    sv_kinetic_energy!(set_accel, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, -0.3);
+    sv_kinetic_energy!(set_brake, fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, 0.075, 0.075);
+    sv_kinetic_energy!(set_accel, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, -0.075);
 }
 
 pub unsafe fn shinespark_air_ceil(fighter: &mut L2CFighterCommon) {
     request_wall_effect(fighter.module_accessor);
     let touch_pos = &mut Vector2f{x:0.0, y:0.0};
-    FighterUtil::get_air_ground_touch_info(fighter.module_accessor, touch_pos, &mut Vector2f{x:0.0, y:0.0});
+    FighterUtil::get_air_ground_touch_info(fighter.module_accessor, touch_pos, &mut Vector2f{x: 0.0, y: 0.0});
     let pos_x = PostureModule::pos_x(fighter.module_accessor);
     let pos_z = PostureModule::pos_z(fighter.module_accessor);
-    PostureModule::set_pos(fighter.module_accessor, &Vector3f{x: pos_x, y: touch_pos.y - 17.0, z: pos_z});
+    PostureModule::set_pos(fighter.module_accessor, &Vector3f{x: pos_x, y: touch_pos.y - 15.0, z: pos_z});
     MotionModule::change_motion(fighter.module_accessor, Hash40::new("shinespark_air_ceil"), 0.0, 1.0, false, 0.0, false, false);
     sv_kinetic_energy!(clear_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_JOSTLE);
     KineticModule::enable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_JOSTLE);
@@ -136,14 +136,14 @@ pub unsafe fn shinespark_wall(fighter: &mut L2CFighterCommon) {
     let ground_dist = GroundModule::get_distance_to_floor(fighter.module_accessor, &Vector3f{x: pos_x - (5.5 * fighter.lr()), y: pos_y, z: pos_z}, 90.0, true);
     let hit_pos = &mut Vector2f{x: 0.0, y: 0.0};
     let hit_rot = &mut Vector2f{x: 0.0, y: 0.0};
-    let is_hit = GroundModule::ray_check_hit_pos_normal(fighter.module_accessor, &Vector2f{x: pos_x, y: pos_y + 7.0}, &Vector2f{x: 10.0 * fighter.lr(), y: 0.1}, hit_pos, hit_rot, true);
+    let is_hit = GroundModule::ray_check_hit_pos_normal(fighter.module_accessor, &Vector2f{x: pos_x, y: pos_y + 7.5}, &Vector2f{x: 9.0 * fighter.lr(), y: 0.1}, hit_pos, hit_rot, true);
     if is_hit == 1 {
         PostureModule::set_pos(fighter.module_accessor, &Vector3f{x: hit_pos.x - (5.5 * fighter.lr()), y: pos_y - ground_dist, z: pos_z});
         let rot = (-hit_rot.x).atan2(hit_rot.y);
         EffectModule::req(fighter.module_accessor, Hash40::new("sys_crown"), &Vector3f{x: hit_pos.x, y: hit_pos.y, z: pos_z}, &Vector3f{x: 0.0, y: 0.0, z: rot}, 1.0, 0, -1, false, 0);
     } else {
         PostureModule::set_pos(fighter.module_accessor, &Vector3f{x: pos_x, y: pos_y - ground_dist, z: pos_z});
-        EffectModule::req(fighter.module_accessor, Hash40::new("sys_crown"), &Vector3f{x: pos_x + 5.5, y: pos_y + 7.0, z: pos_z}, &Vector3f{x: 0.0, y: 0.0, z: 90.0}, 1.0, 0, -1, false, 0);
+        EffectModule::req(fighter.module_accessor, Hash40::new("sys_crown"), &Vector3f{x: pos_x + 6.0, y: pos_y + 7.5, z: pos_z}, &Vector3f{x: 0.0, y: 0.0, z: 90.0}, 1.0, 0, -1, false, 0);
     }
     MotionModule::change_motion(fighter.module_accessor, Hash40::new("shinespark_wall"), 0.0, 1.0, false, 0.0, false, false);
     GroundModule::correct(fighter.module_accessor, GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND_CLIFF_STOP));
@@ -158,7 +158,7 @@ pub unsafe fn shinespark_air_wall(fighter: &mut L2CFighterCommon) {
     FighterUtil::get_air_ground_touch_info(fighter.module_accessor, touch_pos, &mut Vector2f{x:0.0, y:0.0});
     let pos_y = PostureModule::pos_y(fighter.module_accessor);
     let pos_z = PostureModule::pos_z(fighter.module_accessor);
-    PostureModule::set_pos(fighter.module_accessor, &Vector3f{x: touch_pos.x - (5.5 * fighter.lr()), y: pos_y, z: pos_z});
+    PostureModule::set_pos(fighter.module_accessor, &Vector3f{x: touch_pos.x - (6.0 * fighter.lr()), y: pos_y, z: pos_z});
     MotionModule::change_motion(fighter.module_accessor, Hash40::new("shinespark_air_wall"), 0.0, 1.0, false, 0.0, false, false);
     sv_kinetic_energy!(clear_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_JOSTLE);
     KineticModule::enable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_JOSTLE);
@@ -380,7 +380,7 @@ unsafe extern "C" fn shinespark_start_main(fighter: &mut L2CFighterCommon) -> L2
         MotionModule::change_motion(fighter.module_accessor, Hash40::new("shinespark_air_start"), 0.0, 1.0, false, 0.0, false, false);
         MotionModule::add_motion_2nd(fighter.module_accessor, Hash40::new("special_lw_loop"), 0.0, 1.0, false, 0.0);
         MotionModule::set_weight(fighter.module_accessor, 0.0, false);
-        PostureModule::add_pos(fighter.module_accessor, &mut Vector3f{x: 0.0, y: 0.01, z: 0.0});
+        PostureModule::add_pos(fighter.module_accessor, &mut Vector3f{x: 0.0, y: 0.015, z: 0.0});
     } else {
         VarModule::off_flag(fighter.battle_object, vars::samus::status::SHINESPARK_IS_SPECIAL_LW);
         if fighter.is_situation(*SITUATION_KIND_GROUND) {
@@ -622,7 +622,7 @@ pub unsafe fn shinespark_end_main_loop(fighter: &mut L2CFighterCommon) -> L2CVal
             } else if stop_speed_y < 0.0 && StatusModule::situation_kind(fighter.module_accessor) == *SITUATION_KIND_GROUND {
                 shinespark_landing(fighter);
             } else if stop_speed_y == 0.0 && fighter.is_situation(*SITUATION_KIND_GROUND) && (
-                (angle > 5.0 && angle < 50.0) || (angle < -5.0 && angle > -50.0)
+                (angle >= 0.0 && angle <= 45.0) || (angle <= 0.0 && angle >= -45.0)
             ) {
                 speedbooster_on(fighter);
                 fighter.change_status(FIGHTER_STATUS_KIND_DASH.into(), true.into());
@@ -670,9 +670,9 @@ pub unsafe fn shinespark_end_main_loop(fighter: &mut L2CFighterCommon) -> L2CVal
                 } else if fighter.is_situation(*SITUATION_KIND_GROUND) && stop_speed_y < 0.0 {
                     LANDING_EFFECT(fighter, Hash40::new("sys_crown"), Hash40::new("top"), 0, 0, 3, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
                     shinespark_special_lw_wall(fighter);
-                } else if fighter.is_situation(*SITUATION_KIND_GROUND) && ((angle > 5.0  && angle < 50.0) || (angle < -5.0 && angle > -50.0)) {
+                } else if fighter.is_situation(*SITUATION_KIND_GROUND) && ((angle >= 0.0  && angle <= 45.0) || (angle <= 0.0 && angle >= -45.0)) {
                     speedbooster_on(fighter);
-                    fighter.change_status(FIGHTER_SAMUS_STATUS_KIND_SPECIAL_AIR_LW.into(), true.into()); //loop
+                    fighter.change_status(FIGHTER_SAMUS_STATUS_KIND_SPECIAL_AIR_LW.into(), true.into());
                     return true.into()
                 } else if SlowModule::frame(fighter.module_accessor, *FIGHTER_SLOW_KIND_HIT) < 2 && !StopModule::is_stop(fighter.module_accessor) {
                     VarModule::dec_int(fighter.battle_object, vars::samus::status::SHINESPARK_LOOP_TIMER);

@@ -24,6 +24,14 @@ Use this instead of get_command_flag_cat
 // It doesn't need a hook or return value because all that is handled in the ACMD crate.
 // lol, lmao - blujay
 
+#[skyline::hook(replace = smash::lua2cpp::L2CFighterCommon_sys_line_system_control_fighter)]
+pub unsafe fn sys_line_system_control_fighter_hook(fighter: &mut L2CFighterCommon) -> L2CValue {
+    left_stick_flick_counter(fighter);
+    right_stick_flick_counter(fighter);
+
+    original!()(fighter)
+}
+
 // general per-frame fighter-level hooks
 #[utils::export(common::opff)]
 pub unsafe fn fighter_common_opff(fighter: &mut L2CFighterCommon) {
@@ -54,7 +62,16 @@ pub unsafe fn moveset_edits(fighter: &mut L2CFighterCommon, info: &FrameInfo) {
     momentum_transfer_line::run(fighter, info.lua_state, &mut *info.agent, boma, info.cat, info.status_kind, info.situation_kind, info.fighter_kind, info.stick_x, info.stick_y, info.facing);
 }
 
+fn nro_hook(info: &skyline::nro::NroInfo) {
+    if info.name == "common" {
+        skyline::install_hooks!(
+            sys_line_system_control_fighter_hook
+        );
+    }
+}
+
 pub fn install() {
     Agent::new("fighter")
         .install();
+    skyline::nro::add_hook(nro_hook);
 }

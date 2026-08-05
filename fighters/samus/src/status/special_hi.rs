@@ -165,7 +165,7 @@ unsafe extern "C" fn special_hi_exec(fighter: &mut L2CFighterCommon) -> L2CValue
         let pos_x = angle.to_radians().cos() * 3.0 * lr;
         let pos_y = angle.to_radians().sin() * 3.0;
         let end_joint = PhysicsModule::get_2nd_node_num(article_boma) as i32;
-        let vec3 = &mut Vector3f{x:0.0, y:3.0, z:0.0};
+        let vec3 = &mut Vector3f{x: 0.0, y: 3.0, z: 0.0};
         ModelModule::joint_global_position(fighter.module_accessor, Hash40::new("haver"), vec3, false);
         PhysicsModule::set_2nd_pos(article_boma, end_joint, &Vector3f{x:vec3.x+pos_x, y:vec3.y+pos_y, z:0.0});
     }

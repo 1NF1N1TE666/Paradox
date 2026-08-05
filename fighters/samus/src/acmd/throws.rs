@@ -3,7 +3,7 @@ use super::*;
 unsafe extern "C" fn game_catch(agent: &mut L2CAgentBase) {
     let boma = agent.boma();
     let lua_state = agent.lua_state_agent;
-    FT_MOTION_RATE(agent, 0.7);
+    FT_MOTION_RATE(agent, 0.4285);
     frame(lua_state, 7.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
@@ -50,7 +50,7 @@ unsafe extern "C" fn expression_catch(agent: &mut L2CAgentBase) {
 unsafe extern "C" fn game_catchdash(agent: &mut L2CAgentBase) {
     let boma = agent.boma();
     let lua_state = agent.lua_state_agent;
-    FT_MOTION_RATE(agent, 0.55555);
+    FT_MOTION_RATE(agent, 0.33333);
     frame(lua_state, 9.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
@@ -97,7 +97,7 @@ unsafe extern "C" fn expression_catchdash(agent: &mut L2CAgentBase) {
 unsafe extern "C" fn game_catchturn(agent: &mut L2CAgentBase) {
     let boma = agent.boma();
     let lua_state = agent.lua_state_agent;
-    FT_MOTION_RATE(agent, 0.5);
+    FT_MOTION_RATE(agent, 0.3);
     frame(lua_state, 10.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {

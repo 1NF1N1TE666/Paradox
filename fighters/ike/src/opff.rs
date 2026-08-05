@@ -364,24 +364,6 @@ unsafe fn quickdraw_attack_freefall(fighter: &mut L2CFighterCommon) {
     }
 }
 
-unsafe fn fastfall_specials(fighter: &mut L2CFighterCommon) {
-    if fighter.is_situation(*SITUATION_KIND_AIR)
-    && fighter.is_status_one_of(&[
-        *FIGHTER_STATUS_KIND_SPECIAL_N,
-        *FIGHTER_IKE_STATUS_KIND_SPECIAL_N_LOOP,
-        *FIGHTER_IKE_STATUS_KIND_SPECIAL_N_END,
-        *FIGHTER_IKE_STATUS_KIND_SPECIAL_N_END_MDL,
-        *FIGHTER_IKE_STATUS_KIND_SPECIAL_N_END_MAX,
-        *FIGHTER_STATUS_KIND_SPECIAL_S,
-        *FIGHTER_IKE_STATUS_KIND_SPECIAL_S_HOLD,
-        *FIGHTER_IKE_STATUS_KIND_SPECIAL_S_ATTACK,
-        *FIGHTER_STATUS_KIND_SPECIAL_LW,
-        *FIGHTER_IKE_STATUS_KIND_SPECIAL_LW_HIT
-    ]) {
-        fighter.sub_air_check_dive();
-    }
-}
-
 pub unsafe fn moveset(fighter: &mut smash::lua2cpp::L2CFighterCommon, boma: &mut BattleObjectModuleAccessor) {
     stored_aether(fighter);
     quickdraw_attack_arm_bend(boma);
@@ -389,7 +371,6 @@ pub unsafe fn moveset(fighter: &mut smash::lua2cpp::L2CFighterCommon, boma: &mut
     grab_lean(boma);
     fair_wrist_bend(boma);
     quickdraw_attack_freefall(fighter);
-    fastfall_specials(fighter);
 }
 
 pub extern "C" fn ike_frame_wrapper(fighter: &mut smash::lua2cpp::L2CFighterCommon) {

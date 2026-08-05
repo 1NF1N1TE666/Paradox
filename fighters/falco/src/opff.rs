@@ -38,24 +38,11 @@ unsafe fn check_special_lw_hit(fighter: &mut L2CFighterCommon) {
     }
 }
 
-unsafe fn fastfall_specials(fighter: &mut L2CFighterCommon) {
-    if fighter.is_situation(*SITUATION_KIND_AIR)
-    && fighter.is_status_one_of(&[
-        *FIGHTER_STATUS_KIND_SPECIAL_N,
-        *FIGHTER_STATUS_KIND_SPECIAL_LW,
-        statuses::falco::SPECIAL_LW_LOOP,
-        statuses::falco::SPECIAL_LW_HIT
-    ]) {
-        fighter.sub_air_check_dive();
-    }
-}
-
 pub unsafe fn moveset(fighter: &mut L2CFighterCommon, boma: &mut BattleObjectModuleAccessor, id: usize, cat: [i32 ; 4], status_kind: i32, situation_kind: i32, motion_kind: u64, stick_x: f32, stick_y: f32, facing: f32, frame: f32) {
     laser_land_cancel(boma, status_kind, situation_kind, cat[1], stick_y);
     firebird_startup_ledgegrab(fighter);
     aim_throw_lasers(boma);
     check_special_lw_hit(fighter);
-    fastfall_specials(fighter);
 }
 
 pub extern "C" fn falco_frame_wrapper(fighter: &mut smash::lua2cpp::L2CFighterCommon) {

@@ -1,7 +1,5 @@
 use super::*;
 
-// FIGHTER_STATUS_KIND_SPECIAL_LW
-
 unsafe extern "C" fn special_lw_pre(fighter: &mut L2CFighterCommon) -> L2CValue {
     StatusModule::init_settings(
         fighter.module_accessor,
@@ -33,12 +31,9 @@ unsafe extern "C" fn special_lw_pre(fighter: &mut L2CFighterCommon) -> L2CValue 
 }
 
 unsafe extern "C" fn special_lw_init(fighter: &mut L2CFighterCommon) -> L2CValue {
-    let speed_y = fighter.get_speed_y(*FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
-    sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, speed_y.min(0.0) * 0.33);
     let speed_x = KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
-    let reflector_air_start_x_mul: f32 = 0.5;
     fighter.clear_lua_stack();
-    lua_args!(fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, speed_x * reflector_air_start_x_mul, 0.0);
+    lua_args!(fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, speed_x, 0.0);
     app::sv_kinetic_energy::set_speed(fighter.lua_state_agent);
     KineticModule::enable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_STOP);
     KineticUtility::clear_unable_energy(*FIGHTER_KINETIC_ENERGY_ID_CONTROL, fighter.module_accessor);
@@ -47,14 +42,14 @@ unsafe extern "C" fn special_lw_init(fighter: &mut L2CFighterCommon) -> L2CValue
 }
 
 pub unsafe extern "C" fn special_lw_main(fighter: &mut L2CFighterCommon) -> L2CValue {
-    let stop_y_frame: i32 = 5;
+    let stop_y_frame: i32 = 0;
     VarModule::set_int(fighter.battle_object, vars::falco::status::SPECIAL_LW_STOP_Y_FRAME, stop_y_frame);
     special_lw_motion_helper(fighter);
     fighter.main_shift(special_lw_main_loop)
 }
 
 unsafe extern "C" fn special_lw_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdash_cancel() {
+    if fighter.check_jump_cancel(true) {
         return 0.into();
     }
 
@@ -99,12 +94,12 @@ unsafe extern "C" fn special_lw_exec(fighter: &mut L2CFighterCommon) -> L2CValue
         return false.into();
     }
 
-    let stop_y_frame: i32 = 5;
+    let stop_y_frame: i32 = 0;
     if stop_y_frame != 0 {
         let work_stop_y_frame = VarModule::get_int(fighter.battle_object, vars::falco::status::SPECIAL_LW_STOP_Y_FRAME);
         KineticModule::enable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
         if work_stop_y_frame - 1 <= 0 {
-            let reflector_air_accel_y: f32 = 0.05;
+            let reflector_air_accel_y: f32 = 0.15;
             sv_kinetic_energy!(set_accel, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, -reflector_air_accel_y);
         } else {
             sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, 0.0);
@@ -174,11 +169,11 @@ unsafe extern "C" fn special_lw_loop_main(fighter: &mut L2CFighterCommon) -> L2C
 }
 
 unsafe extern "C" fn special_lw_loop_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdash_cancel() {
+    if fighter.check_jump_cancel(true) {
         return 0.into();
     }
     
-    let reflector_init_keep_frame: i32 = 20;
+    let reflector_init_keep_frame: i32 = 1;
     if fighter.global_table[CURRENT_FRAME].get_i32() > reflector_init_keep_frame {
         if ControlModule::check_button_off(fighter.module_accessor, *CONTROL_PAD_BUTTON_SPECIAL) {
             fighter.change_status(statuses::falco::SPECIAL_LW_END.into(), false.into()); 
@@ -231,12 +226,12 @@ unsafe extern "C" fn special_lw_loop_exec(fighter: &mut L2CFighterCommon) -> L2C
         return false.into();
     }
 
-    let stop_y_frame: i32 = 4;
+    let stop_y_frame: i32 = 0;
     if stop_y_frame != 0 {
         let work_stop_y_frame = VarModule::get_int(fighter.battle_object, vars::falco::status::SPECIAL_LW_STOP_Y_FRAME);
         KineticModule::enable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
         if work_stop_y_frame - 1 <= 0 {
-            let mut reflector_air_accel_y: f32 = 0.027;
+            let mut reflector_air_accel_y: f32 = 0.15;
             sv_kinetic_energy!(set_accel, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, -reflector_air_accel_y);
         } else {
             sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, 0.0);
@@ -297,7 +292,7 @@ unsafe extern "C" fn special_lw_end_main(fighter: &mut L2CFighterCommon) -> L2CV
 }
 
 unsafe extern "C" fn special_lw_end_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdash_cancel() {
+    if fighter.check_jump_cancel(true) {
         return 0.into();
     }
     
@@ -376,7 +371,7 @@ pub unsafe extern "C" fn special_lw_hit_main(fighter: &mut L2CFighterCommon) -> 
 
 unsafe extern "C" fn special_lw_hit_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
     if MotionModule::is_end(fighter.module_accessor) {
-        if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdash_cancel() {
+        if fighter.check_jump_cancel(true) {
             return 0.into();
         }
 

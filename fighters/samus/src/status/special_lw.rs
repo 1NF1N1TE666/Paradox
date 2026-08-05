@@ -71,7 +71,7 @@ pub unsafe fn special_lw_start_main_loop(fighter: &mut L2CFighterCommon) -> bool
                 let accel_x = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {0.15} else {0.075} as f32;
                 sv_kinetic_energy!(set_accel_x_mul, fighter, FIGHTER_KINETIC_ENERGY_ID_CONTROL, accel_x);
             }
-            let jump = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {1.5} else {3.0} as f32;
+            let jump = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {3.0} else {1.5} as f32;
             sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, jump, 0.0);
         } else if fighter.global_table[SITUATION_KIND].get_i32() != fighter.global_table[PREV_SITUATION_KIND].get_i32() {
             if fighter.global_table[SITUATION_KIND].get_i32() == *SITUATION_KIND_GROUND {
@@ -221,14 +221,14 @@ pub unsafe fn special_lw_loop_main_loop(fighter: &mut L2CFighterCommon) -> bool 
             let accel_x = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {0.15} else {0.075} as f32;
             sv_kinetic_energy!(set_accel_x_mul, fighter, FIGHTER_KINETIC_ENERGY_ID_CONTROL, accel_x);
         }
-        let speed = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {1.5} else {3.0} as f32;
+        let speed = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {3.0} else {1.5} as f32;
         sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, speed, 0.0);
     } else if (fighter.global_table[SITUATION_KIND].get_i32() == *SITUATION_KIND_GROUND || fighter.global_table[PREV_SITUATION_KIND].get_i32() == *SITUATION_KIND_GROUND) && fighter.is_button_trigger(Buttons::Jump) {
         LANDING_EFFECT(fighter, Hash40::new("sys_jump_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, false);
         GroundModule::correct(fighter.module_accessor, GroundCorrectKind(*GROUND_CORRECT_KIND_AIR));
         fighter.set_situation(SITUATION_KIND_AIR.into());
         GroundModule::set_attach_ground(fighter.module_accessor, false);
-        let speed = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {1.5} else {3.0} as f32;
+        let speed = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {3.0} else {1.5} as f32;
         sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, speed, 0.0);
         KineticModule::enable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_GRAVITY);
         let brake = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {0.15} else {0.075} as f32;
@@ -368,7 +368,7 @@ pub unsafe fn special_lw_end_main_loop(fighter: &mut L2CFighterCommon) -> bool {
             let accel_x = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {0.15} else {0.075} as f32;
             sv_kinetic_energy!(set_accel_x_mul, fighter, FIGHTER_KINETIC_ENERGY_ID_CONTROL, accel_x);
         }
-        let speed = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {1.5} else {3.0} as f32;
+        let speed = if VarModule::is_flag(fighter.battle_object, vars::samus::instance::SPEEDBOOSTER_ON) {3.0} else {1.5} as f32;
         sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, speed, 0.0);
     }
     if MotionModule::is_end(fighter.module_accessor) {

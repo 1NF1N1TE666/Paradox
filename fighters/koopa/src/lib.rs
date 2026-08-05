@@ -5,6 +5,11 @@
 pub mod acmd;
 
 pub mod opff;
+pub mod status;
+
+// articles
+
+mod breath;
 
 use smash::{
     lib::{
@@ -40,6 +45,10 @@ use smashline::*;
 
 pub fn install() {
     let agent = &mut Agent::new("koopa");
+    acmd::install(agent);
     opff::install(agent);
+    status::install(agent);
     agent.install();
+
+    breath::install();
 }

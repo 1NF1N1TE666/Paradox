@@ -45,7 +45,7 @@ pub unsafe extern "C" fn special_s_main_loop(fighter: &mut L2CFighterCommon) -> 
             } else if step == *FIGHTER_FALCO_ILLUSION_STEP_END {
                 if is_end && situation == *SITUATION_KIND_AIR {
                     fighter.change_status(FIGHTER_STATUS_KIND_FALL.into(), true.into());
-                    fighter.set_float(3.0, *FIGHTER_INSTANCE_WORK_ID_FLOAT_LANDING_FRAME);
+                    fighter.set_float(1.0, *FIGHTER_INSTANCE_WORK_ID_FLOAT_LANDING_FRAME);
                     return 0.into();
                 }
                 if situation == *SITUATION_KIND_GROUND {

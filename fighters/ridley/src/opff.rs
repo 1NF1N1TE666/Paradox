@@ -6,14 +6,6 @@ unsafe extern "C" fn init(fighter: &mut L2CFighterCommon) {
     VarModule::off_flag(fighter.object(), vars::ridley::instance::SPECIAL_LW_IS_SKEWER);
 }
 
-unsafe fn laser_land_cancel(fighter: &mut L2CFighterCommon) {
-    if fighter.is_status_one_of(&[
-        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_N_SHOOT,
-    ]) {
-        fighter.check_land_cancel(None);
-    }
-}
-
 unsafe fn rotate_bone(boma: &mut BattleObjectModuleAccessor, max_angle: f32, min_angle: f32, strength: f32) {
     let mut angle = min_angle.abs();
     if strength > 0.0 {
@@ -45,26 +37,8 @@ unsafe fn angled_skewer(fighter: &mut L2CFighterCommon) {
     }
 }
 
-unsafe fn fastfall_specials(fighter: &mut L2CFighterCommon) {
-    if fighter.is_situation(*SITUATION_KIND_AIR)
-    && fighter.is_status_one_of(&[
-        *FIGHTER_STATUS_KIND_SPECIAL_N,
-        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_N_CHARGE,
-        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_N_SHOOT,
-        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_DRAG_JUMP,
-        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_S_FALL_JUMP,
-        *FIGHTER_STATUS_KIND_SPECIAL_LW,
-        *FIGHTER_RIDLEY_STATUS_KIND_SPECIAL_LW_FINISH,
-        statuses::ridley::SPECIAL_LW_POGO
-    ]) {
-        fighter.sub_air_check_dive();
-    }
-}
-
 pub unsafe fn moveset(fighter: &mut L2CFighterCommon) {
-    laser_land_cancel(fighter);
     angled_skewer(fighter);
-    fastfall_specials(fighter);
 }
 
 pub extern "C" fn ridley_frame_wrapper(fighter: &mut smash::lua2cpp::L2CFighterCommon) {

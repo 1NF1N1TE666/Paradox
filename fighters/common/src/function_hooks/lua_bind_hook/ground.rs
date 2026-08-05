@@ -94,8 +94,7 @@ unsafe fn correct_hook(boma: &mut BattleObjectModuleAccessor, kind: GroundCorrec
 }
 
 unsafe fn check_fighter_edge_slipoffs(boma: &mut BattleObjectModuleAccessor) -> L2CValue {
-    let status_kind = StatusModule::status_kind(boma);
-    let fighter_kind = boma.kind();
+    if (boma.kind() == *FIGHTER_KIND_KOOPA && boma.is_status(*FIGHTER_KOOPA_STATUS_KIND_SPECIAL_HI_G)) { return true.into(); }
 
     return false.into();
 }

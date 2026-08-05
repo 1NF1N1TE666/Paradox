@@ -201,7 +201,7 @@ unsafe fn dread(fighter: &mut L2CFighterCommon) {
             *FIGHTER_SAMUS_STATUS_KIND_BOMB_JUMP
         ]) {
             if fighter.stick_x() * fighter.lr() >= 0.0 {
-                VarModule::set_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER, 20);
+                VarModule::set_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER, 30);
             } else {
                 if VarModule::get_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER) > 0 {
                     VarModule::dec_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER);
@@ -242,22 +242,6 @@ unsafe fn dread(fighter: &mut L2CFighterCommon) {
     }
 }
 
-unsafe fn fastfall_specials(fighter: &mut L2CFighterCommon) {
-    if fighter.is_situation(*SITUATION_KIND_AIR)
-    && fighter.is_status_one_of(&[
-        *FIGHTER_STATUS_KIND_SPECIAL_N,
-        *FIGHTER_SAMUS_STATUS_KIND_SPECIAL_N_H,
-        *FIGHTER_SAMUS_STATUS_KIND_SPECIAL_N_F,
-        *FIGHTER_SAMUS_STATUS_KIND_SPECIAL_N_E,
-        *FIGHTER_SAMUS_STATUS_KIND_SPECIAL_N_C,
-        *FIGHTER_SAMUS_STATUS_KIND_SPECIAL_S1A,
-        *FIGHTER_SAMUS_STATUS_KIND_SPECIAL_S2A,
-        *FIGHTER_SAMUS_STATUS_KIND_SPECIAL_AIR_LW
-    ]) {
-        fighter.sub_air_check_dive();
-    }
-}
-
 pub unsafe fn moveset(fighter: &mut L2CFighterCommon, boma: &mut BattleObjectModuleAccessor) {
     let status_kind = StatusModule::status_kind(boma);
     let situation_kind = StatusModule::situation_kind(boma);
@@ -267,7 +251,6 @@ pub unsafe fn moveset(fighter: &mut L2CFighterCommon, boma: &mut BattleObjectMod
     aim(fighter);
     ice(fighter, boma);
     dread(fighter);
-    fastfall_specials(fighter);
 }
 
 pub extern "C" fn samus_frame_wrapper(fighter: &mut L2CFighterCommon) {

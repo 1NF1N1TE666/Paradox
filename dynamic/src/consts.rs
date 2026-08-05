@@ -60,201 +60,82 @@ pub mod globals {
     pub const DASH_POST_TRANSITION_CALLBACK: i32 = 0x57;
 }
 
-/*
-WuBoy's VarModule Constant Overhaul!
-The way our variable constants are labelled is changing.
-
-Variables now have two categories:
-INSTANCE, which persists until manually changed. Represented by 0x0XXX.
-STATUS, which is automatically reset when the status changes. Represented by 0x1XXX.
-
-In addition, there are two sub-categories.
-Common, which is shared by every fighter. Represented by 0xX0XX.
-Agent, which is specific to a certain fighter/agent. Represented by 0xX1XX.
-
-This means for each combination, you have access to 256 common variables and 256 agent variables.
-That's a LOT of space, and I don't anticipate it all gets used up with proper variable application.
-*/
-
 pub mod vars {
     pub mod common {
         pub mod instance {
-            pub const HITSTUN_START: i32 = 0x0000;
-            pub const IS_IN_HITSTUN: i32 = 0x0001;
-            pub const CSTICK_OVERRIDE: i32 = 0x0002;
-            pub const CSTICK_OVERRIDE_SECOND: i32 = 0x0003;
-            pub const OMNI_FLOAT: i32 = 0x0005;
-            pub const AERIAL_NO_FLOAT: i32 = 0x0006;
-            pub const FLOAT_PAUSE_AERIAL: i32 = 0x0007;
-            pub const SIDE_SPECIAL_CANCEL: i32 = 0x0008;
-            pub const UP_SPECIAL_CANCEL: i32 = 0x0009;
-            pub const JAB_DA_CHECKS: i32 = 0x000A;
-            pub const TILT_CHECKS: i32 = 0x000B;
-            pub const AERIAL_CHECKS: i32 = 0x000C;
-            pub const SMASH_CHECKS: i32 = 0x000D;
-            pub const SPECIAL_STALL: i32 = 0x000E;
-            pub const SPECIAL_STALL_USED: i32 = 0x000F;
-            pub const ENABLE_AIR_ESCAPE_MAGNET: i32 = 0x0010;
-            pub const FOOTSTOOL_AIRDODGE_LOCKOUT: i32 = 0x0012;
-            pub const CAN_ESCAPE_TUMBLE: i32 = 0x0013;
-            pub const SPECIAL_WALL_JUMP: i32 = 0x0014;
-            pub const TETHER_HOGGED: i32 = 0x0015;
-            pub const B_REVERSED: i32 = 0x0016; // Converted for now, but will likely get removed when B Reverse Reimplementation happens
-            pub const TUMBLE_KB: i32 = 0x0017;
-            pub const CAN_GLIDE_TOSS: i32 = 0x0019;
-            pub const IS_MOTION_BASED_ATTACK: i32 = 0x001A;
-            pub const PREV_FLAG_DISABLE_ESCAPE_AIR: i32 = 0x001B;
-            pub const ENABLE_WAVELAND_PLATDROP: i32 = 0x001C;
-            pub const IS_DACUS: i32 = 0x001D;
-            pub const IS_STICKY_WALK: i32 = 0x001E;
-            pub const ENABLE_BOOST_RUN: i32 = 0x001F;
-            pub const PERFECT_WAVEDASH: i32 = 0x0020;
-            pub const JUMP_NEXT: i32 = 0x0021;
-            pub const SHOULD_TRUMP_TETHER: i32 = 0x0022;
-            pub const UP_SPECIAL_INTERRUPT: i32 = 0x0023; // Ness and Lucas use this
-            pub const UP_SPECIAL_INTERRUPT_AIRTIME: i32 = 0x0024; // Ness and Lucas use this
-            pub const SPECIAL_PROJECTILE_SPAWNED: i32 = 0x0025; // Luigi, Ivysaur, and Young Link use this
-            pub const STALL_PREVENTION: i32 = 0x0027; //Ness and Lucas down b stall prevention
-            pub const SPIN_ATTACK_LAND_CANCEL: i32 = 0x003E; // Link and Mii Sword use this
-            pub const SIDE_SPECIAL_CANCEL_NO_HIT: i32 = 0x004D; // Used by Kazuya and Sora
-            pub const IS_LATE_PIVOT: i32 = 0x004E;
-            pub const CAN_PERFECT_PIVOT: i32 = 0x004F;
-            pub const IS_SMASH_TURN: i32 = 0x0050;
-            pub const ENABLE_AIR_ESCAPE_JUMPSQUAT: i32 = 0x0051;
-            pub const IS_KNOCKDOWN_THROW: i32 = 0x0052;
-            pub const IS_HEAVY_ATTACK: i32 = 0x0053;
-            pub const IS_CC_NON_TUMBLE: i32 = 0x0054;
-            pub const IS_GETTING_POSITION_FOR_ECB: i32 = 0x0055;
-            pub const CHECK_CHANGE_MOTION_ONLY: i32 = 0x0056;
-            pub const BEFORE_GROUND_COLLISION: i32 = 0x0057;
-            pub const IS_IGNORED_STATUS_FRAME_0: i32 = 0x0058;
-            pub const FLUSH_EFFECT_ACMD: i32 = 0x0059;
-            pub const IS_PARRY_FOR_GUARD_OFF: i32 = 0x0060;
-            pub const TEMPORARY_CLIFF_STOP: i32 = 0x0061;
-            pub const ENABLE_FRAME_DATA_DEBUG: i32 = 0x0062;
-            pub const IS_ATTACK_CANCEL: i32 = 0x0063;
-            pub const DISABLE_CSTICK_BUFFER_ROLL_OOS: i32 = 0x0064;
-            pub const IS_INIT: i32 = 0x0065;
-            pub const IS_FLOAT: i32 = 0x0066;
-            pub const WEIRD_ASS_TURN_RUN_ANIMATION: i32 = 0x0067;
-            pub const ACMD_EFFECT: i32 = 0x0068;
-            pub const WAS_PREV_STATUS_CANCELABLE: i32 = 0x0069;
-            pub const IS_ENTER_DASH_CANCEL: i32 = 0x006A;
-            pub const DOWN_DISABLE_PASSIVE: i32 = 0x006B;
-            pub const DOWN_DISABLE_A_LAND: i32 = 0x006C;
-            pub const IS_KILLING_BLOW: i32 = 0x006D;
-            pub const IS_DITCIT: i32 = 0x006E;
-
-            pub const PARADOX_BURST_LIMIT: i32 = 0x006F;
-            pub const DISABLE_CLUTCH: i32 = 0x0070;
+            // flags
+            pub const CSTICK_OVERRIDE: i32 = 0x0001;
+            pub const CSTICK_OVERRIDE_SECOND: i32 = 0x0002;
+            pub const ENABLE_AIR_ESCAPE_MAGNET: i32 = 0x003;
+            pub const SPECIAL_WALL_JUMP: i32 = 0x0004;
+            pub const IS_DACUS: i32 = 0x0005;
+            pub const PERFECT_WAVEDASH: i32 = 0x0006;
+            pub const IS_LATE_PIVOT: i32 = 0x0007;
+            pub const CAN_PERFECT_PIVOT: i32 = 0x0008;
+            pub const IS_SMASH_TURN: i32 = 0x0009;
+            pub const ENABLE_AIR_ESCAPE_JUMPSQUAT: i32 = 0x000A;
+            pub const IS_KNOCKDOWN_THROW: i32 = 0x000B;
+            pub const IS_CC_NON_TUMBLE: i32 = 0x000C;
+            pub const IS_GETTING_POSITION_FOR_ECB: i32 = 0x000D;
+            pub const CHECK_CHANGE_MOTION_ONLY: i32 = 0x000E;
+            pub const IS_INIT: i32 = 0x000F;
+            pub const WEIRD_ASS_TURN_RUN_ANIMATION: i32 = 0x0010;
+            pub const WAS_PREV_STATUS_CANCELABLE: i32 = 0x0011;
+            pub const IS_ENTER_DASH_CANCEL: i32 = 0x0012;
+            pub const IS_DITCIT: i32 = 0x0013;
+            pub const BURST_LIMIT: i32 = 0x0014;
 
             // ints
-
-            pub const LAST_ATTACK_RECEIVER_ENTRY_ID: i32 = 0x0000;
             pub const COSTUME_SLOT_NUMBER: i32 = 0x0001;
-            pub const FLOAT_DURATION: i32 = 0x0002;
-            pub const FLOAT_STATUS_KIND: i32 = 0x0003;
-            pub const HITFALL_BUFFER: i32 = 0x0004;
-            pub const FLY_NEXT_FRAME: i32 = 0x0005;
-            pub const GIMMICK_TIMER: i32 = 0x0006;
-            pub const AIR_ESCAPE_MAGNET_FRAME: i32 = 0x0007;
-            pub const CSTICK_LIFE: i32 = 0x0008;
-            pub const AGT_USED_COUNTER: i32 = 0x0009;
-            pub const CLIFF_XLU_FRAME: i32 = 0x000A;
-            pub const LAST_ATTACK_HITBOX_ID: i32 = 0x000B;
-            pub const SHIELD_EFFECT_HANDLE: i32 = 0x000C;
-            pub const FRAME_COUNTER: i32 = 0x000D;
-            pub const LEFT_STICK_FLICK_X: i32 = 0x000E;
-            pub const LEFT_STICK_FLICK_Y: i32 = 0x000F;
-            pub const RIGHT_STICK_FLICK_X: i32 = 0x0010;
-            pub const RIGHT_STICK_FLICK_Y: i32 = 0x0011;
-            pub const PREV_STATUS_TRANSITION_FRAME: i32 = 0x0012;
-            pub const ATTACK_LR_CHECK: i32 = 0x0013;
-
-            pub const AIR_TIME: i32 = 0x0014;
+            pub const CLIFF_XLU_FRAME: i32 = 0x0002;
+            pub const LEFT_STICK_FLICK_X: i32 = 0x0003;
+            pub const LEFT_STICK_FLICK_Y: i32 = 0x0004;
+            pub const RIGHT_STICK_FLICK_X: i32 = 0x0005;
+            pub const RIGHT_STICK_FLICK_Y: i32 = 0x0006;
+            pub const PREV_STATUS_TRANSITION_FRAME: i32 = 0x0007;
+            pub const ATTACK_LR_CHECK: i32 = 0x0008;
+            pub const STALL_TIMER: i32 = 0x0009;
 
             // floats
-
-            pub const LAST_ATTACK_DAMAGE_DEALT: i32 = 0x0000;
             pub const CURRENT_MOMENTUM: i32 = 0x0001;
             pub const JUMPSQUAT_VELOCITY: i32 = 0x0002;
-            pub const JUMP_SPEED_RATIO: i32 = 0x0003;
-            pub const DOUBLE_JUMP_FRAME: i32 = 0x0004;
-            pub const GROUND_VEL: i32 = 0x0005;
-            pub const RAR_LENIENCY: i32 = 0x0006;
-            pub const CURRENT_MOMENTUM_SPECIALS: i32 = 0x0007;
-            pub const DOUBLE_JUMP_TIMER: i32 = 0x0008;
-            pub const ROLL_SPEED: i32 = 0x0009;
-            pub const LAST_GROUNDED_POS: i32 = 0x000A;
-            pub const GET_DIST_TO_FLOOR: i32 = 0x000D;
-            pub const ECB_BOTTOM_Y_OFFSET: i32 = 0x000E;
-            pub const CURR_DASH_SPEED: i32 = 0x000F;
-            pub const MOONWALK_SPEED: i32 = 0x0010;
-            pub const ESCAPE_AIR_SLIDE_SPEED_X: i32 = 0x0011;
-            pub const ESCAPE_AIR_SLIDE_SPEED_Y: i32 = 0x0012;
-            pub const Y_POS: i32 = 0x0013;
-            pub const JUMP_SPEED_MAX_MUL: i32 = 0x0014;
-            pub const ECB_TOP_Y_OFFSET: i32 = 0x0015;
-            pub const LAST_ATTACK_HIT_LOCATION: i32 = 0x0016;
-            pub const LAST_ATTACK_HIT_LOCATION_X: i32 = 0x0016;
-            pub const LAST_ATTACK_HIT_LOCATION_Y: i32 = 0x0017;
-            pub const LAST_ATTACK_HIT_LOCATION_Z: i32 = 0x0018;
-            pub const ECB_CENTER_Y_OFFSET: i32 = 0x0019;
-            pub const DASH_HIP_OFFSET_X: i32 = 0x0020;
-            pub const RUN_HIP_OFFSET_X: i32 = 0x0021;
-            pub const ATTACK_S3_CSTICK_X: i32 = 0x0022;
-            pub const LAST_RECEIVED_ATTACK_HIT_LOCATION: i32 = 0x0023;
-            pub const LAST_RECEIVED_ATTACK_HIT_LOCATION_X: i32 = 0x0023;
-            pub const LAST_RECEIVED_ATTACK_HIT_LOCATION_Y: i32 = 0x0024;
-            pub const LAST_RECEIVED_ATTACK_HIT_LOCATION_Z: i32 = 0x0025;
-            pub const LAND_CANCEL_LAG: i32 = 0x0026;
+            pub const GROUND_VEL: i32 = 0x0003;
+            pub const RAR_LENIENCY: i32 = 0x0004;
+            pub const CURRENT_MOMENTUM_SPECIALS: i32 = 0x0005;
+            pub const ECB_BOTTOM_Y_OFFSET: i32 = 0x0006;
+            pub const CURR_DASH_SPEED: i32 = 0x0007;
+            pub const ECB_CENTER_Y_OFFSET: i32 = 0x0008;
+            pub const DASH_HIP_OFFSET_X: i32 = 0x0009;
+            pub const RUN_HIP_OFFSET_X: i32 = 0x000A;
+            pub const LAND_CANCEL_LAG: i32 = 0x000B;
+            pub const ATTACK_S3_CSTICK_X: i32 = 0x000C;
 
         }
         pub mod status {
             // flags
-            pub const FAF_REACHED: i32 = 0x10FD;
-            pub const PREV_AUTOCANCEL_FLAG: i32 = 0x10FE;
-            pub const DISABLE_ECB_SHIFT: i32 = 0x10FF;
-            pub const IS_DASH_TO_RUN_FRAME: i32 = 0x1000;
-            pub const IS_AFTER_DASH_TO_RUN_FRAME: i32 = 0x1001;
-            pub const APPLY_DASH_END_SPEED_MUL: i32 = 0x1002;
-            pub const ATTACK_DASH_CANCEL_DISABLE: i32 = 0x1000;
-            pub const ATTACK_DASH_ENABLE_AIR_FALL: i32 = 0x1001;
-            pub const ATTACK_DASH_ENABLE_AIR_CONTINUE: i32 = 0x1002;
-            pub const ATTACK_DASH_ENABLE_AIR_DRIFT: i32 = 0x1003;
-            pub const ATTACK_DASH_AIR_DRIFT_ENABLED: i32 = 0x1004;
-            pub const ATTACK_DASH_ENABLE_AIR_LANDING: i32 = 0x1005;
-            pub const SHOULD_WAVELAND: i32 = 0x1000;
-            pub const IS_JAB_LOCK_ROLL: i32 = 0x1000;
-            pub const IS_SPIKE: i32 = 0x1001;
-            pub const DAMAGE_FLY_RESET_TRIGGER: i32 = 0x1002;
-            pub const SUICIDE_THROW_CAN_CLATTER: i32 = 0x1000;
-            pub const ENABLE_UCF: i32 = 0x1000;
-            pub const PUMMEL_OVERRIDE_GLOBAL_STATS: i32 = 0x1000;
-            pub const CSTICK_IRAR: i32 = 0x1000;
-            pub const FLOAT_INHERIT_AERIAL: i32 = 0x1000;
-            pub const IS_TELEPORT_WALL_RIDE: i32 = 0x1000; // Mewtwo, Palutena, Sheik, and Zelda use this
-            pub const ENABLE_SPECIAL_WALLJUMP: i32 = 0x1050;
-            pub const HIT_EFFECT_DROP_ITEM: i32 = 0x1051;
-            pub const SHOULD_HITFALL: i32 = 0x1006;
-            pub const NO_POCKET: i32 = 0x1052;
-            pub const IS_DASH_CANCEL: i32 = 0x1055;
+            pub const DISABLE_ECB_SHIFT: i32 = 0x1001;
+            pub const IS_DASH_TO_RUN_FRAME: i32 = 0x1002;
+            pub const IS_AFTER_DASH_TO_RUN_FRAME: i32 = 0x1003;
+            pub const APPLY_DASH_END_SPEED_MUL: i32 = 0x1004;
+            pub const ATTACK_DASH_CANCEL_DISABLE: i32 = 0x1005;
+            pub const ATTACK_DASH_ENABLE_AIR_FALL: i32 = 0x1006;
+            pub const ATTACK_DASH_ENABLE_AIR_CONTINUE: i32 = 0x1007;
+            pub const ATTACK_DASH_ENABLE_AIR_DRIFT: i32 = 0x1008;
+            pub const ATTACK_DASH_AIR_DRIFT_ENABLED: i32 = 0x1009;
+            pub const ATTACK_DASH_ENABLE_AIR_LANDING: i32 = 0x100A;
+            pub const SHOULD_WAVELAND: i32 = 0x100B;
+            pub const DAMAGE_FLY_RESET_TRIGGER: i32 = 0x100C;
+            pub const CSTICK_IRAR: i32 = 0x100D;
+            pub const ENABLE_SPECIAL_WALLJUMP: i32 = 0x100E;
+            pub const NO_POCKET: i32 = 0x100F;
+            pub const IS_DASH_CANCEL: i32 = 0x1010;
+            pub const CHECK_HOLD_INPUT: i32 = 0x1011;
 
             // ints
 
-            pub const DOWN_STAND_FB_KIND: i32 = 0x1000;
-            pub const FLOAT_FRAME: i32 = 0x1000;
-            pub const FLOAT_ENABLE_UNIQ: i32 = 0x1001;
-            pub const FLOAT_MTRANS: i32 = 0x1002;
-            pub const WARP_EFF_HANDLER: i32 = 0x1000;
-
             // floats
-
-            pub const INITIAL_KNOCKBACK_VEL_X: i32 = 0x1000;
-            pub const INITIAL_KNOCKBACK_VEL_Y: i32 = 0x1001;
-            pub const RESTING_HIP_OFFSET_Y: i32 = 0x1000;
-            pub const TELEPORT_INITIAL_SPEED_X: i32 = 0x1000;
-            pub const TELEPORT_INITIAL_SPEED_Y: i32 = 0x1001;
+            pub const INITIAL_KNOCKBACK_VEL_X: i32 = 0x1001;
+            pub const INITIAL_KNOCKBACK_VEL_Y: i32 = 0x1002;
         }
     }
 
@@ -431,22 +312,6 @@ pub mod statuses {
         pub const SPECIAL_LW_HIT: i32 = 0x1ea;
     }
 
-    pub mod mario {
-        pub const CAPJUMP: i32 = 0x1E3;
-        pub const CAPDIVE: i32 = 0x1E4;
-        pub const CAPCATCH: i32 = 0x1E5;
-    }
-
-    pub mod mario_captoss {
-        pub const START: i32 = 0x0;
-        pub const FLY: i32 = 0x1;
-        pub const TURN: i32 = 0x2;
-        pub const HOP: i32 = 0x3;
-        pub const HOLD: i32 = 0x4;
-        pub const SWALLOWED: i32 = 0x5;
-        pub const JUMP: i32 = 0x6;
-    }
-
     pub mod ridley {
         pub const SPECIAL_LW_POGO: i32 = 0x203;
         pub const SPECIAL_LW_LANDING: i32 = 0x204;
@@ -459,7 +324,5 @@ pub mod statuses {
 }
 
 pub mod articles {
-    pub mod mario {
-        pub const CAPTOSS: i32 = 0x6;
-    }
+    
 }
