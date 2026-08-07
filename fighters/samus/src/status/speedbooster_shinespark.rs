@@ -398,7 +398,7 @@ unsafe extern "C" fn shinespark_start_main(fighter: &mut L2CFighterCommon) -> L2
     KineticModule::unable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_ENV_WIND);
     KineticModule::unable_energy(fighter.module_accessor, *FIGHTER_KINETIC_ENERGY_ID_GROUND_MOVEMENT);
     VarModule::off_flag(fighter.battle_object, vars::samus::instance::SHINESPARK_ON);
-    VarModule::set_int(fighter.battle_object, vars::samus::status::SHINESPARK_AIM_TIMER, 30);
+    VarModule::set_int(fighter.battle_object, vars::samus::status::SHINESPARK_AIM_TIMER, 24);
     VarModule::set_int(fighter.battle_object, vars::samus::status::SHINESPARK_AIM_EFFECT_TIMER, 14);
     fighter.sub_shift_status_main(L2CValue::Ptr(shinespark_start_main_loop as *const () as _))
 }
@@ -591,7 +591,7 @@ unsafe extern "C" fn shinespark_end_main(fighter: &mut L2CFighterCommon) -> L2CV
     sv_kinetic_energy!(set_stable_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, 6.0, 6.0);
     let lr = fighter.lr();
     sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_STOP, speed_x * lr, speed_y);
-    VarModule::set_int(fighter.battle_object, vars::samus::status::SHINESPARK_LOOP_TIMER, 10);
+    VarModule::set_int(fighter.battle_object, vars::samus::status::SHINESPARK_LOOP_TIMER, 12);
     VarModule::off_flag(fighter.battle_object, vars::samus::status::SHINESPARK_ENABLE_GRAVITY);
     VarModule::off_flag(fighter.battle_object, vars::samus::status::SHINESPARK_ENABLE_CONTROL);
     fighter.sub_shift_status_main(L2CValue::Ptr(shinespark_end_main_loop as *const () as _))
