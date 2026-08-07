@@ -176,31 +176,28 @@ unsafe fn dread(fighter: &mut L2CFighterCommon) {
         && WorkModule::get_param_float(fighter.module_accessor, hash40("run_speed_max"), 0) > speed {
             KineticModule::add_speed(fighter.module_accessor, &Vector3f{x: 3.0 - speed, y: 0.0, z: 0.0});
         }
-        if fighter.is_button_trigger(Buttons::AppealAll) 
-        && fighter.is_status(*FIGHTER_STATUS_KIND_RUN) 
+        if fighter.is_status(*FIGHTER_STATUS_KIND_RUN)
+        && fighter.left_stick_y() <= -0.6 
+        && VarModule::get_int(fighter.object(), vars::common::instance::LEFT_STICK_FLICK_Y) < 4 
         && !StatusModule::is_changing(fighter.module_accessor) {
             speedbooster_off(fighter);
             StatusModule::change_status_force(fighter.module_accessor, *FIGHTER_SAMUS_STATUS_KIND_BOMB_JUMP, true);
         }
-        if fighter.is_status_one_of(&[
-            *FIGHTER_STATUS_KIND_DASH,
-            *FIGHTER_STATUS_KIND_RUN,
-            *FIGHTER_STATUS_KIND_JUMP_SQUAT,
-            *FIGHTER_STATUS_KIND_JUMP, 
-            *FIGHTER_STATUS_KIND_JUMP_AERIAL,
-            *FIGHTER_STATUS_KIND_WALL_JUMP,
-            *FIGHTER_STATUS_KIND_FALL, 
-            *FIGHTER_STATUS_KIND_FALL_AERIAL,
-            *FIGHTER_STATUS_KIND_LANDING,
-            *FIGHTER_STATUS_KIND_LANDING_LIGHT,
-            *FIGHTER_STATUS_KIND_ATTACK_DASH,
-            *FIGHTER_STATUS_KIND_ATTACK_LW3,
-            *FIGHTER_STATUS_KIND_SPECIAL_LW,
-            *FIGHTER_SAMUS_STATUS_KIND_SPECIAL_AIR_LW,
-            *FIGHTER_SAMUS_STATUS_KIND_SPECIAL_GROUND_LW,
-            *FIGHTER_SAMUS_STATUS_KIND_BOMB_JUMP
+        if !fighter.is_status_one_of(&[
+            *FIGHTER_STATUS_KIND_DAMAGE, 
+            *FIGHTER_STATUS_KIND_DAMAGE_AIR, 
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY, 
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_ROLL, 
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR, 
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_D, 
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_U, 
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_LR,
+            *FIGHTER_STATUS_KIND_DAMAGE_SONG, 
+            *FIGHTER_STATUS_KIND_DAMAGE_SLEEP_START,
+            *FIGHTER_STATUS_KIND_DAMAGE_SLEEP,
+            *FIGHTER_STATUS_KIND_DAMAGE_SLEEP_END
         ]) {
-            if fighter.stick_x() * fighter.lr() >= 0.0 {
+            if fighter.stick_x() * fighter.lr() >= 0.4 {
                 VarModule::set_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER, 30);
             } else {
                 if VarModule::get_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER) > 0 {
