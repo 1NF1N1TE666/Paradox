@@ -323,7 +323,7 @@ pub unsafe fn get_param_float_replace(module_accessor: u64, param_type: u64, par
             if param_type == hash40("param_special_n") {
                 if param_hash == hash40("cshot_charge_frame") {
                     if VarModule::is_flag(boma_reference.object(), vars::samus::instance::ICE_MODE) {
-                        return 60.0;
+                        return 30.0;
                     }
                 }
             }

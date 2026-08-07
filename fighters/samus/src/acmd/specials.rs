@@ -34,19 +34,17 @@ unsafe extern "C" fn game_specialnice(agent: &mut L2CAgentBase) {
     let angle = VarModule::get_float(boma.object(), vars::samus::instance::AIM_ANGLE);
     let mut damage = 1.0;
     let mut size = 1.0;
+    FT_MOTION_RATE(agent, 1.33333);
     frame(lua_state, 3.0);
+    FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
         let charge = boma.get_int(*FIGHTER_SAMUS_STATUS_SPECIAL_N_WORK_INT_COUNT) as f32 / WorkModule::get_param_float(boma, hash40("param_special_n"), hash40("cshot_charge_frame"));
-        let length = Lerp::lerp(&0.0, &10.0, &charge);
-        damage = Lerp::lerp(&5.0, &25.0, &charge);
-        size = Lerp::lerp(&1.0, &5.0, &charge);
-        ATTACK(agent, 0, 0, Hash40::new("top"), damage, 80, 120, 0, 0, size, 0.0, 10.0 + (if charge < 1.0 {15.0 - ((1.0 - charge) * 7.5)} else {15.0}) * angle.to_radians().sin(), (if charge < 1.0 {15.0 - ((1.0 - charge) * 7.5)} else {15.0}) * angle.to_radians().cos(), Some(0.0), Some(10.0 + (15.0 + length) * angle.to_radians().sin()), Some((15.0 + length) * angle.to_radians().cos()), 1.0, 1.0, *ATTACK_SETOFF_KIND_ON, *ATTACK_LR_CHECK_F, false, 0, 0.0, 0, true, true, false, false, false, *COLLISION_SITUATION_MASK_GA, *COLLISION_CATEGORY_MASK_ALL, *COLLISION_PART_MASK_ALL, false, Hash40::new("collision_attr_ice"), if charge < 0.5 {*ATTACK_SOUND_LEVEL_S} else if charge < 1.0 {*ATTACK_SOUND_LEVEL_M} else {*ATTACK_SOUND_LEVEL_L}, *COLLISION_SOUND_ATTR_FREEZE, *ATTACK_REGION_ENERGY);
+        let length = Lerp::lerp(&0.0, &12.0, &charge);
+        damage = Lerp::lerp(&4.0, &16.0, &charge);
+        size = Lerp::lerp(&(1.0 as f32), &(8.0 as f32), &charge);
+        ATTACK(agent, 0, 0, Hash40::new("top"), damage, 361, 120, 0, 0, size, 0.0, 8.0 + (if charge < 1.0 {16.0 - ((1.0 - charge) * 8.0)} else {16.0}) * angle.to_radians().sin(), (if charge < 1.0 {16.0 - ((1.0 - charge) * 8.0)} else {16.0}) * angle.to_radians().cos(), Some(0.0), Some(8.0 + (16.0 + length) * angle.to_radians().sin()), Some((16.0 + length) * angle.to_radians().cos()), 1.0, 1.0, *ATTACK_SETOFF_KIND_ON, *ATTACK_LR_CHECK_F, false, 0, 0.0, 0, true, true, false, false, false, *COLLISION_SITUATION_MASK_GA, *COLLISION_CATEGORY_MASK_ALL, *COLLISION_PART_MASK_ALL, false, Hash40::new("collision_attr_ice"), if charge < 0.5 {*ATTACK_SOUND_LEVEL_S} else if charge < 1.0 {*ATTACK_SOUND_LEVEL_M} else {*ATTACK_SOUND_LEVEL_L}, *COLLISION_SOUND_ATTR_FREEZE, *ATTACK_REGION_ENERGY);
     }
-    wait(lua_state, 3.0);
-    if is_excute(agent) {
-        AttackModule::set_size(boma,0,size * 1.25);
-    }
-    wait(lua_state, 2.0);
+    wait(lua_state, 4.0);
     if is_excute(agent) {
         AttackModule::clear_all(boma);
     }
@@ -167,7 +165,7 @@ unsafe extern "C" fn game_specialhi(agent: &mut L2CAgentBase) {
         let article_boma = sv_battle_object::module_accessor(object_id);
         let pos = &mut Vector3f{x:0.0, y:0.0, z:0.0};
         ModelModule::joint_global_position(boma, Hash40::new("armr"), pos, false);
-        if !(&mut *article_boma).is_status(*WEAPON_SAMUS_GBEAM_STATUS_KIND_SHOOT) && GroundModule::get_distance_to_floor(boma, pos, 0.0, false) < 6.0 && angle > 70.0 {
+        if !(&mut *article_boma).is_status(*WEAPON_SAMUS_GBEAM_STATUS_KIND_SHOOT) && GroundModule::get_distance_to_floor(boma, pos, 0.0, false) < 8.0 && angle > 60.0 {
             ArticleModule::change_status(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_GBEAM, *WEAPON_SAMUS_GBEAM_STATUS_KIND_SHOOT, ArticleOperationTarget(*ARTICLE_OPE_TARGET_ALL));
         }
     }
