@@ -83,7 +83,7 @@ unsafe extern "C" fn game_throwf(agent: &mut L2CAgentBase) {
         lua_bind::FighterCutInManager::set_throw_finish_zoom_rate(singletons::FighterCutInManager(), 1.5);
         lua_bind::FighterCutInManager::set_throw_finish_offset(singletons::FighterCutInManager(), Vector3f{x: 5.0, y: 3.0, z: 0.0});
     }
-    frame(lua_state, 11.0);
+    wait(lua_state, 1.0);
     if is_excute(agent) {
         let target = WorkModule::get_int64(boma, *FIGHTER_STATUS_THROW_WORK_INT_TARGET_OBJECT);
         let target_group = WorkModule::get_int64(boma, *FIGHTER_STATUS_THROW_WORK_INT_TARGET_HIT_GROUP);
@@ -109,7 +109,7 @@ unsafe extern "C" fn game_throwb(agent: &mut L2CAgentBase) {
         lua_bind::FighterCutInManager::set_throw_finish_zoom_rate(singletons::FighterCutInManager(), 1.5);
         lua_bind::FighterCutInManager::set_throw_finish_offset(singletons::FighterCutInManager(), Vector3f{x: 3.0, y: 6.0, z: 0.0});
     }
-    frame(lua_state, 24.0);
+    wait(lua_state, 1.0);
     if is_excute(agent) {
         AttackModule::clear_all(boma);
         REVERSE_LR(agent);
@@ -138,7 +138,7 @@ unsafe extern "C" fn game_throwhi(agent: &mut L2CAgentBase) {
         lua_bind::FighterCutInManager::set_throw_finish_zoom_rate(singletons::FighterCutInManager(), 2.0);
         lua_bind::FighterCutInManager::set_throw_finish_offset(singletons::FighterCutInManager(), Vector3f{x: 0.0, y: 8.0, z: 0.0});
     }
-    wait(lua_state, 21.0);
+    wait(lua_state, 1.0);
     if is_excute(agent) {
         let target = WorkModule::get_int64(boma, *FIGHTER_STATUS_THROW_WORK_INT_TARGET_OBJECT);
         let target_group = WorkModule::get_int64(boma, *FIGHTER_STATUS_THROW_WORK_INT_TARGET_HIT_GROUP);
