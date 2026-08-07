@@ -190,27 +190,27 @@ pub unsafe fn get_param_float_replace(module_accessor: u64, param_type: u64, par
             if param_type == hash40("param_special_s") { 
                 if param_hash == hash40("special_s_ground_dash_spd_mul") {
                     if VarModule::is_flag(boma_reference.object(), vars::ike::instance::STORED_AETHER) {
-                        return 0.075;
+                        return 0.03;
                     }
                 }
                 if param_hash == hash40("special_s_air_dash_spd_mul") {
                     if VarModule::is_flag(boma_reference.object(), vars::ike::instance::STORED_AETHER) {
-                        return 0.075;
+                        return 0.03;
                     }
                 }
                 if param_hash == hash40("special_s_ground_dash_brake_x") {
                     if VarModule::is_flag(boma_reference.object(), vars::ike::instance::STORED_AETHER) {
-                        return 0.075;
+                        return 0.03;
                     }
                 }
                 if param_hash == hash40("special_s_air_dash_brake_x") {
                     if VarModule::is_flag(boma_reference.object(), vars::ike::instance::STORED_AETHER) {
-                        return 0.075;
+                        return 0.03;
                     }
                 }
                 if param_hash == hash40("special_s_atk_power_charge_mul") {
                     if VarModule::is_flag(boma_reference.object(), vars::ike::instance::STORED_AETHER) {
-                        return 0.15;
+                        return 0.3;
                     }
                 }
             }
