@@ -3,7 +3,6 @@ use globals::*;
 
 mod attacks;
 mod throw;
-mod special_n;
 mod special_s;
 mod special_hi;
 mod special_lw;
@@ -37,7 +36,6 @@ pub fn install(agent: &mut Agent) {
     agent.on_start(on_start);
     attacks::install(agent);
     throw::install(agent);
-    special_n::install(agent);
     special_s::install(agent);
     special_hi::install(agent);
     special_lw::install(agent);

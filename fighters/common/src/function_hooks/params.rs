@@ -320,13 +320,6 @@ pub unsafe fn get_param_float_replace(module_accessor: u64, param_type: u64, par
                     return 30.0;
                 }
             }
-            if param_type == hash40("param_special_n") {
-                if param_hash == hash40("cshot_charge_frame") {
-                    if VarModule::is_flag(boma_reference.object(), vars::samus::instance::ICE_MODE) {
-                        return 30.0;
-                    }
-                }
-            }
         }
     } else if boma_reference.is_weapon() {
         if boma_reference.kind() == *WEAPON_KIND_SAMUS_BOMB {

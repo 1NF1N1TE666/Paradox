@@ -158,22 +158,21 @@ unsafe fn ice(fighter: &mut L2CFighterCommon, boma: *mut BattleObjectModuleAcces
 }
 
 unsafe fn dread(fighter: &mut L2CFighterCommon) {
-    let lr = PostureModule::lr(fighter.module_accessor);
-    let speed = KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_ALL).abs();
     if VarModule::is_flag(fighter.object(), vars::samus::instance::SPECIAL_HI_HOP_DISABLE) {
         if !fighter.is_situation(*SITUATION_KIND_AIR) {
             VarModule::off_flag(fighter.object(), vars::samus::instance::SPECIAL_HI_HOP_DISABLE);
         }
     }
     if VarModule::is_flag(fighter.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
+        let speed = KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_ALL) * fighter.lr();
         speedbooster_effect(fighter);
         JostleModule::set_status(fighter.module_accessor, false);
         if fighter.is_status(*FIGHTER_STATUS_KIND_DASH)
-        && WorkModule::get_param_float(fighter.module_accessor, hash40("dash_speed"), 0) > speed {
+        && speed < 3.0 {
             KineticModule::add_speed(fighter.module_accessor, &Vector3f{x: 3.0 - speed, y: 0.0, z: 0.0});
         }
         if fighter.is_status(*FIGHTER_STATUS_KIND_RUN)
-        && WorkModule::get_param_float(fighter.module_accessor, hash40("run_speed_max"), 0) > speed {
+        && speed < 3.0 {
             KineticModule::add_speed(fighter.module_accessor, &Vector3f{x: 3.0 - speed, y: 0.0, z: 0.0});
         }
         if fighter.is_status(*FIGHTER_STATUS_KIND_RUN)
@@ -183,7 +182,8 @@ unsafe fn dread(fighter: &mut L2CFighterCommon) {
             speedbooster_off(fighter);
             StatusModule::change_status_force(fighter.module_accessor, *FIGHTER_SAMUS_STATUS_KIND_BOMB_JUMP, true);
         }
-        if !fighter.is_status_one_of(&[
+        if fighter.stick_x() * fighter.lr() >= 0.4
+        || fighter.is_status_one_of(&[
             *FIGHTER_STATUS_KIND_DAMAGE, 
             *FIGHTER_STATUS_KIND_DAMAGE_AIR, 
             *FIGHTER_STATUS_KIND_DAMAGE_FLY, 
@@ -197,17 +197,13 @@ unsafe fn dread(fighter: &mut L2CFighterCommon) {
             *FIGHTER_STATUS_KIND_DAMAGE_SLEEP,
             *FIGHTER_STATUS_KIND_DAMAGE_SLEEP_END
         ]) {
-            if fighter.stick_x() * fighter.lr() >= 0.4 {
-                VarModule::set_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER, 30);
-            } else {
-                if VarModule::get_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER) > 0 {
-                    VarModule::dec_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER);
-                } else {
-                    speedbooster_off(fighter);
-                }
-            }
+            VarModule::set_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER, 30);
         } else {
-            speedbooster_off(fighter);
+            if VarModule::get_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER) > 0 {
+                VarModule::dec_int(fighter.object(), vars::samus::instance::SPEEDBOOSTER_STICK_TIMER);
+            } else {
+                speedbooster_off(fighter);
+            }
         }
     } else {
         if fighter.is_status_one_of(&[

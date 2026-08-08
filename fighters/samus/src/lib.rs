@@ -61,6 +61,8 @@ pub unsafe extern "C" fn suit_effect(boma: *mut BattleObjectModuleAccessor, batt
 }
 
 pub fn install() {
+    smashline::update_weapon_count(*WEAPON_KIND_SAMUS_MISSILE, 3);
+    smashline::update_weapon_count(*WEAPON_KIND_SAMUS_SUPERMISSILE, 3);
     let agent = &mut Agent::new("samus");
     acmd::install(agent);
     opff::install(agent);

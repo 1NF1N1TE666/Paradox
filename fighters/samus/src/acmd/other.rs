@@ -104,7 +104,6 @@ unsafe extern "C" fn effect_appeals(agent: &mut L2CAgentBase) {
         if VarModule::is_flag(boma.object(), vars::samus::instance::ICE_MODE) {
             EFFECT_FOLLOW(agent, Hash40::new("sys_starrod_splash"), Hash40::new("armr"), 7, 0, 0, 0, 0, 90, 1, true);
             LAST_EFFECT_SET_COLOR(agent,0.375, 1.0,1.0);
-
             EFFECT_FOLLOW(agent,Hash40::new("sys_hit_ice"), Hash40::new("armr"), 8, 0, 0, 0, 0, 90, 0.2, true);
         }
     }

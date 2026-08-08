@@ -322,20 +322,20 @@ unsafe extern "C" fn game_throwhi(agent: &mut L2CAgentBase) {
         smash_script::macros::ATTACK_ABS(agent, *FIGHTER_ATTACK_ABSOLUTE_KIND_CATCH, 0, 4.0, 361, 100, 0, 40, 0.0, 1.0, *ATTACK_LR_CHECK_F, 0.0, true, Hash40::new("collision_attr_normal"), *ATTACK_SOUND_LEVEL_S, *COLLISION_SOUND_ATTR_NONE, *ATTACK_REGION_THROW);
     }
     FT_MOTION_RATE(agent, 0.8);
-    frame(lua_state, 30.0);
+    frame(lua_state, 29.0);
     FT_MOTION_RATE(agent, 1.0);
+    if is_excute(agent) {
+        ATTACK(agent, 0, 0, Hash40::new("top"), 12.0, 80, 100, 0, 40, 4.0, 0.0, 32.0, 0.0, None, None, None, 1.0, 1.0, *ATTACK_SETOFF_KIND_OFF, *ATTACK_LR_CHECK_POS, false, 0, 0.0, 0, false, false, false, false, true, *COLLISION_SITUATION_MASK_GA, *COLLISION_CATEGORY_MASK_ALL, *COLLISION_PART_MASK_ALL, false, Hash40::new("collision_attr_fire"), *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_FIRE, *ATTACK_REGION_NONE);
+        AttackModule::set_catch_only_all(boma, true, false);
+        CHECK_FINISH_CAMERA(agent, 1, 32);
+    }
+    wait(lua_state, 1.0);
     if is_excute(agent) {
         let target = WorkModule::get_int64(boma, *FIGHTER_STATUS_THROW_WORK_INT_TARGET_OBJECT);
         let target_group = WorkModule::get_int64(boma, *FIGHTER_STATUS_THROW_WORK_INT_TARGET_HIT_GROUP);
         let target_no = WorkModule::get_int64(boma, *FIGHTER_STATUS_THROW_WORK_INT_TARGET_HIT_NO);
         ATK_HIT_ABS(agent, *FIGHTER_ATTACK_ABSOLUTE_KIND_THROW, Hash40::new("throw"), target, target_group, target_no);
-    }
-    wait(lua_state, 4.0);
-    if is_excute(agent) {
-        let weapon = if VarModule::is_flag(boma.object(), vars::samus::instance::ICE_MODE) {*FIGHTER_SAMUS_GENERATE_ARTICLE_MISSILE} else {*FIGHTER_SAMUS_GENERATE_ARTICLE_SUPERMISSILE};
-        ArticleModule::generate_article(boma, weapon, false, -1);
-        ArticleModule::shoot_exist(boma, weapon, ArticleOperationTarget(*ARTICLE_OPE_TARGET_LAST), false);
-        ArticleModule::set_visibility_whole(boma, weapon, false, app::ArticleOperationTarget(*ARTICLE_OPE_TARGET_LAST));
+        AttackModule::clear_all(boma);
     }
 }
 
@@ -345,17 +345,14 @@ unsafe extern "C" fn effect_throwhi(agent: &mut L2CAgentBase) {
     if is_excute(agent) {
         LANDING_EFFECT(agent, Hash40::new("sys_whirlwind_r"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, true);
     }
-    frame(lua_state, 32.0);
+    frame(lua_state, 28.0);
+    if is_excute(agent) {
+        EFFECT_FLW_POS(agent, Hash40::new("samus_throw_hi"), Hash40::new("armr"), 8, 0, 0, 0, 0, 0, 0.65, true);
+        LAST_EFFECT_SET_RATE(agent, 1);
+    }
+    wait(lua_state, 2.0);
     if is_excute(agent) {
         LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, true);
-    }
-    wait(lua_state, 2.0);
-    if is_excute(agent) {
-        EFFECT(agent, Hash40::new("samus_missile_shot"), Hash40::new("haver"), 2.2, 0.4, -0.15, 0, 0, 90, 1, 0, 0, 0, 0, 0, 0, false);
-    }
-    wait(lua_state, 2.0);
-    if is_excute(agent) {
-        EFFECT(agent, Hash40::new("samus_missile_straight_smoke"), Hash40::new("armr"), 0, 0, 4, 0, 0, 90, 0.8, 0, 0, 0, 0, 0, 0, false);
     }
 }
 
@@ -366,7 +363,15 @@ unsafe extern "C" fn sound_throwhi(agent: &mut L2CAgentBase) {
     if is_excute(agent) {
         PLAY_SE(agent, Hash40::new("se_common_throw_01"));
     }
-    frame(lua_state, 30.0);
+    wait(lua_state, 25.0);
+    if is_excute(agent) {
+        PLAY_SE(agent, Hash40::new("se_common_kick_hit_s"));
+    }
+    wait(lua_state, 2.0);
+    if is_excute(agent) {
+        PLAY_SE(agent, Hash40::new("se_samus_smash_h01"));
+    }
+    wait(lua_state, 1.0);
     if is_excute(agent) {
         PLAY_SE(agent, Hash40::new("se_common_throw_03"));
     }
@@ -377,28 +382,18 @@ unsafe extern "C" fn expression_throwhi(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     if is_excute(agent) {
         slope!(agent, *MA_MSC_CMD_SLOPE_SLOPE, *SLOPE_STATUS_LR);
-        VisibilityModule::set_int64(boma, hash40("body") as i64, hash40("body_hide_gun") as i64);
-        ArticleModule::remove_exist(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_GUN, ArticleOperationTarget(*ARTICLE_OPE_TARGET_ALL));
-        ArticleModule::generate_article(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_GUN, true, -1);
-        ArticleModule::change_motion(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_GUN, Hash40::new("special_s"), false, -1.0);
-        ArticleModule::set_rate(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_GUN, 1.5);
     }
-    wait(lua_state, 2.0);
+    frame(lua_state, 2.0);
     if is_excute(agent) {
         let link_no = LinkModule::get_node_object_id(boma, *LINK_NO_CAPTURE) as u32;
         let capture_boma = sv_battle_object::module_accessor(link_no);
         MotionModule::set_frame(capture_boma, 1.0, true);
         MotionModule::set_rate(capture_boma, 0.5);
     }
-    frame(lua_state, 30.0);
+    wait(lua_state, 27.0);
     if is_excute(agent) {
-        ControlModule::set_rumble(boma, Hash40::new("rbkind_nohits"), 6, false, *BATTLE_OBJECT_ID_INVALID as u32);
+        ControlModule::set_rumble(boma, Hash40::new("rbkind_explosion"), 0, false, *BATTLE_OBJECT_ID_INVALID as u32);
         QUAKE(agent, *CAMERA_QUAKE_KIND_M);
-    }
-    wait(lua_state, 4.0);
-    if is_excute(agent) {
-        ControlModule::set_rumble(boma, Hash40::new("rbkind_attackm"), 0, false, *BATTLE_OBJECT_ID_INVALID as u32);
-        ArticleModule::set_rate(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_GUN, 1.0);
     }
 }
 
@@ -406,7 +401,7 @@ unsafe extern "C" fn game_throwlw(agent: &mut L2CAgentBase) {
     let boma = agent.boma();
     let lua_state = agent.lua_state_agent;
     if is_excute(agent) {
-        smash_script::macros::ATTACK_ABS(agent, *FIGHTER_ATTACK_ABSOLUTE_KIND_THROW, 0, if VarModule::is_flag(boma.object(), vars::samus::instance::ICE_MODE) {16.0} else {24.0}, 361, 120, 0, 0, 1.0, 1.0, *ATTACK_LR_CHECK_F, 0.0, true, Hash40::new(if VarModule::is_flag(boma.object(), vars::samus::instance::ICE_MODE) {"collision_attr_ice"} else {"collision_attr_elec_whip"}), *ATTACK_SOUND_LEVEL_S, if VarModule::is_flag(boma.object(), vars::samus::instance::ICE_MODE) {*COLLISION_SOUND_ATTR_FREEZE} else {*COLLISION_SOUND_ATTR_KICK}, *ATTACK_REGION_THROW);
+        smash_script::macros::ATTACK_ABS(agent, *FIGHTER_ATTACK_ABSOLUTE_KIND_THROW, 0, 24.0, 361, 120, 0, 0, 1.0, 1.0, *ATTACK_LR_CHECK_F, 0.0, true, Hash40::new("collision_attr_elec_whip"), *ATTACK_SOUND_LEVEL_S, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_THROW);
         smash_script::macros::ATTACK_ABS(agent, *FIGHTER_ATTACK_ABSOLUTE_KIND_CATCH, 0, 4.0, 361, 100, 0, 40, 0.0, 1.0, *ATTACK_LR_CHECK_F, 0.0, true, Hash40::new("collision_attr_normal"), *ATTACK_SOUND_LEVEL_S, *COLLISION_SOUND_ATTR_NONE, *ATTACK_REGION_THROW);
     }
     frame(lua_state, 65.0);
@@ -429,18 +424,8 @@ unsafe extern "C" fn effect_throwlw(agent: &mut L2CAgentBase) {
     if is_excute(agent) {
         LANDING_EFFECT(agent, Hash40::new("sys_crown"), Hash40::new("top"), 15, 0, 0, 0, 0, 0, 0.6, 0, 0, 0, 0, 0, 0, false);
     }
-    wait(lua_state, 1.0);
+    wait(lua_state, 45.0);
     if is_excute(agent) {
-        if VarModule::is_flag(boma.object(), vars::samus::instance::ICE_MODE) {
-            EFFECT_FOLLOW(agent, Hash40::new("samus_cshot_hold"), Hash40::new("armr"), 7, -1, 0, 180, 90, 10, 1, true);
-            LAST_EFFECT_SET_COLOR(agent,0.25, 1.5, 1.0);
-            EFFECT_FOLLOW(agent, Hash40::new("sys_ice"), Hash40::new("armr"), 6, 0, 0, 180, 90, 10, 0.075, true);
-        }
-    }
-    frame(lua_state, 65.0);
-    if is_excute(agent) {
-        EFFECT_OFF_KIND(agent, Hash40::new("sys_ice"), true, true);
-        EFFECT_OFF_KIND(agent, Hash40::new("samus_cshot_hold"), true, true);
         EFFECT_FOLLOW(agent, Hash40::new("samus_cshot_shot"), Hash40::new("armr"), 7, -1, 0, 180, 90, 10, 0.2, true);
     }
 }
@@ -452,15 +437,15 @@ unsafe extern "C" fn sound_throwlw(agent: &mut L2CAgentBase) {
     if is_excute(agent) {
         PLAY_SE(agent, Hash40::new("se_common_throw_01"));
     }
-    frame(lua_state, 14.0);
+    wait(lua_state, 12.0);
     if is_excute(agent) {
         PLAY_SE(agent, Hash40::new("se_common_throw_03"));
     }
-    frame(lua_state, 15.0);
+    wait(lua_state, 1.0);
     if is_excute(agent) {
         PLAY_SE(agent, Hash40::new("se_samus_special_n01"));
     }
-    frame(lua_state, 65.0);
+    wait(lua_state, 50.0);
     if is_excute(agent) {
         STOP_SE(agent, Hash40::new("se_samus_special_n01"));
         PLAY_SE(agent, Hash40::new("se_samus_special_n03"));
@@ -472,14 +457,12 @@ unsafe extern "C" fn expression_throwlw(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     frame(lua_state, 15.0);
     if is_excute(agent) {
-        if !VarModule::is_flag(boma.object(), vars::samus::instance::ICE_MODE) {
-            ArticleModule::generate_article_enable(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_CSHOT, false, -1);
-        }
+        ArticleModule::generate_article_enable(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_CSHOT, false, -1);
         let storage = ArticleModule::get_float(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_CSHOT, *WEAPON_SAMUS_CSHOT_INSTANCE_WORK_ID_FLOAT_CHARGE);
         VarModule::set_float(boma.object(), vars::samus::instance::SPECIAL_N_THROW_LW_CHARGE_STORAGE, storage);
         ArticleModule::set_float(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_CSHOT, 0.0, *WEAPON_SAMUS_CSHOT_INSTANCE_WORK_ID_FLOAT_CHARGE);
     }
-    frame(lua_state, 20.0);
+    wait(lua_state, 5.0);
     if is_excute(agent) {
         QUAKE(agent, *CAMERA_QUAKE_KIND_S);
         ControlModule::set_rumble(boma, Hash40::new("rbkind_attackm"), 0, false, *BATTLE_OBJECT_ID_INVALID as u32);
@@ -496,7 +479,7 @@ unsafe extern "C" fn expression_throwlw(agent: &mut L2CAgentBase) {
         }
         wait(lua_state, 1.0);
     }
-    frame(lua_state, 65.0);
+    wait(lua_state, 9.0);
     if is_excute(agent) {
         ArticleModule::remove_exist(boma, *FIGHTER_SAMUS_GENERATE_ARTICLE_CSHOT, ArticleOperationTarget(*ARTICLE_OPE_TARGET_LAST));
         ControlModule::set_rumble(boma, Hash40::new("rbkind_beams"), 0, false, 0);
