@@ -1,17 +1,9 @@
-utils::import_noreturn!(common::opff::fighter_common_opff);
 use super::*;
 use crate::status::special_n::*;
 use globals::*;
 
 unsafe fn stored_aether(fighter: &mut L2CFighterCommon) {
     if VarModule::is_flag(fighter.object(), vars::ike::instance::STORED_AETHER) {
-        // if VarModule::get_int(fighter.object(), vars::ike::instance::STORED_AETHER_DAMAGE_TIMER) == 0 {
-        //     DamageModule::add_damage(fighter.module_accessor, 1.0, 0);
-        //     VarModule::set_int(fighter.object(), vars::ike::instance::STORED_AETHER_DAMAGE_TIMER, 12);
-        // } else {
-        //     VarModule::dec_int(fighter.object(), vars::ike::instance::STORED_AETHER_DAMAGE_TIMER);
-        // }
-
         if fighter.is_status_one_of(&[
             *FIGHTER_STATUS_KIND_ATTACK,
             *FIGHTER_STATUS_KIND_ATTACK_100,
@@ -373,19 +365,12 @@ pub unsafe fn moveset(fighter: &mut smash::lua2cpp::L2CFighterCommon, boma: &mut
     quickdraw_attack_freefall(fighter);
 }
 
-pub extern "C" fn ike_frame_wrapper(fighter: &mut smash::lua2cpp::L2CFighterCommon) {
-    unsafe {
-        common::opff::fighter_common_opff(fighter);
-        ike_frame(fighter)
-    }
-}
-
-pub unsafe fn ike_frame(fighter: &mut smash::lua2cpp::L2CFighterCommon) {
+pub unsafe extern "C" fn ike_frame(fighter: &mut smash::lua2cpp::L2CFighterCommon) {
     if let Some(info) = FrameInfo::update_and_get(fighter) {
         moveset(fighter, &mut *info.boma);
     }
 }
 
 pub fn install(agent: &mut Agent) {
-    agent.on_line(Main, ike_frame_wrapper);
+    agent.on_line(Main, ike_frame);
 }

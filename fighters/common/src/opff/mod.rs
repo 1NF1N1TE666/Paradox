@@ -15,15 +15,6 @@ pub mod pocket;
 
 use other::*;
 
-/*
-This function runs exactly once per every fighter loaded into a match, every frame. I.E.  5 players in a match = 5 times per frame
-Use this instead of get_command_flag_cat
-*/
-
-// This is a special case function (I.E. don't use this as an exmaple for hooking).
-// It doesn't need a hook or return value because all that is handled in the ACMD crate.
-// lol, lmao - blujay
-
 #[skyline::hook(replace = smash::lua2cpp::L2CFighterCommon_sys_line_system_control_fighter)]
 pub unsafe fn sys_line_system_control_fighter_hook(fighter: &mut L2CFighterCommon) -> L2CValue {
     left_stick_flick_counter(fighter);
@@ -32,17 +23,12 @@ pub unsafe fn sys_line_system_control_fighter_hook(fighter: &mut L2CFighterCommo
     original!()(fighter)
 }
 
-// general per-frame fighter-level hooks
-#[utils::export(common::opff)]
-pub unsafe fn fighter_common_opff(fighter: &mut L2CFighterCommon) {
+pub unsafe extern "C" fn fighter_common_opff(fighter: &mut L2CFighterCommon) {
     if let Some(info) = FrameInfo::update_and_get(fighter) {
         let boma = &mut *info.boma;
         if boma.is_fighter() {
             moveset_edits(fighter, &info);
         }
-        
-    } else {
-        panic!("Could not get the FrameInfo for this fighter! Is this even a fighter?")
     }
 }
 
@@ -71,7 +57,8 @@ fn nro_hook(info: &skyline::nro::NroInfo) {
 }
 
 pub fn install() {
-    Agent::new("fighter")
-        .install();
     skyline::nro::add_hook(nro_hook);
+    Agent::new("fighter")
+        .on_line(Main, fighter_common_opff)
+        .install();
 }

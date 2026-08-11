@@ -1,4 +1,3 @@
-utils::import_noreturn!(common::opff::fighter_common_opff);
 use super::*;
 use globals::*;
 use crate::status::speedbooster_shinespark::*;
@@ -246,19 +245,12 @@ pub unsafe fn moveset(fighter: &mut L2CFighterCommon, boma: &mut BattleObjectMod
     dread(fighter);
 }
 
-pub extern "C" fn samus_frame_wrapper(fighter: &mut L2CFighterCommon) {
-    unsafe {
-        common::opff::fighter_common_opff(fighter);
-        samus_frame(fighter)
-    }
-}
-
-pub unsafe fn samus_frame(fighter: &mut L2CFighterCommon) {
+pub unsafe extern "C" fn samus_frame(fighter: &mut L2CFighterCommon) {
     if let Some(info) = FrameInfo::update_and_get(fighter) {
         moveset(fighter, &mut *info.boma);
     }
 }
 
 pub fn install(agent: &mut Agent) {
-    agent.on_line(Main, samus_frame_wrapper);
+    agent.on_line(Main, samus_frame);
 }

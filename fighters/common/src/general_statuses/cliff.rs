@@ -13,7 +13,6 @@ fn nro_hook(info: &skyline::nro::NroInfo) {
             status_CliffClimb_Main,
             status_CliffEscape_Main,
             status_CliffJump1,
-            status_end_CliffJump1,
             status_CliffJump2_Main,
             sub_cliff_uniq_process_exit_Common,
             get_cliff_wait_hit_xlu_frame
@@ -115,16 +114,8 @@ unsafe fn status_CliffJump1(fighter: &mut L2CFighterCommon) -> L2CValue {
         MotionModule::set_rate(fighter.module_accessor, motion_rate);
         MotionModule::set_whole_rate(fighter.module_accessor, 1.0);
     }
-    InputModule::set_persist_lifetime(fighter.battle_object, 10);
-    InputModule::enable_persist(fighter.battle_object);
 
     ret
-}
-
-#[skyline::hook(replace = smash::lua2cpp::L2CFighterCommon_status_end_CliffJump1)]
-unsafe fn status_end_CliffJump1(fighter: &mut L2CFighterCommon) -> L2CValue {
-    InputModule::disable_persist(fighter.battle_object);
-    call_original!(fighter)
 }
 
 #[skyline::hook(replace = smash::lua2cpp::L2CFighterCommon_status_CliffJump2_Main)]

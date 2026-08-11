@@ -2,9 +2,7 @@ use smash::app::{BattleObject, BattleObjectModuleAccessor};
 use smash::lua2cpp::L2CFighterCommon;
 use crate::offsets;
 use crate::ext::*;
-// use std::arch::asm;
 use smash::phx::Vector2f;
-// use crate::se;
 
 #[macro_export]
 macro_rules! dump_trace {

@@ -1,5 +1,5 @@
 [workspace]
-members = ["dynamic", "fighters/*", "hdr-macros", "utils"]
+members = ["dynamic", "fighters/*", "utils"]
 
 resolver = "2"
 
@@ -15,7 +15,6 @@ skyline-web = { git = "https://github.com/skyline-rs/skyline-web" }
 smashline = { git = "https://github.com/HDR-Development/smashline" }
 
 dynamic = { path = "dynamic" }
-hdr-macros = { path = "hdr-macros" }
 utils = { path = "utils" }
 
 bayonetta = { path = "fighters/bayonetta" }

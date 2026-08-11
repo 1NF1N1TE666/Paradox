@@ -15,29 +15,6 @@ pub fn install() {
     skyline::nro::add_hook(nro_hook);
 }
 
-/// Regular attack air status script except uses the animation's movement by default.
-#[utils::export(common::djc)]
-pub unsafe extern "C" fn attack_air_main_status(fighter: &mut L2CFighterCommon) -> L2CValue {
-    fighter.sub_attack_air_common(L2CValue::Bool(false));
-    MotionModule::set_trans_move_speed_no_scale(fighter.module_accessor, true);
-    fighter.sub_shift_status_main(L2CValue::Ptr(attack_air_main_status_loop as *const () as _))
-}
-
-/// Performs the leniency check for double jump canceling
-#[utils::export(common::djc)]
-pub unsafe extern "C" fn attack_air_main_status_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if !fighter.status_AttackAir_Main_common().get_bool() {
-        fighter.sub_air_check_superleaf_fall_slowly();
-        if !fighter.global_table[IS_STOPPING].get_bool() {
-            fighter.sub_attack_air_inherit_jump_aerial_motion_uniq_process_exec_fix_pos();
-        }
-        0.into()
-    }
-    else {
-        1.into()
-    }
-}
-
 /// Inherits the double jump animation movement when doing an aerial (init)
 #[skyline::hook(replace = L2CFighterCommon_sub_attack_air_inherit_jump_aerial_motion_uniq_process_init)]
 pub unsafe extern "C" fn sub_attack_air_inherit_jump_aerial_motion_uniq_process_init_impl(fighter: &mut L2CFighterCommon) -> L2CValue {
@@ -71,13 +48,6 @@ pub unsafe extern "C" fn sub_attack_air_inherit_jump_aerial_motion_uniq_process_
     }
 }
 
-#[utils::export(common::djc)]
-fn sub_attack_air_inherit_jump_aerial_motion_uniq_process_init(fighter: &mut L2CFighterCommon) -> L2CValue {
-    unsafe {
-        sub_attack_air_inherit_jump_aerial_motion_uniq_process_init_impl(fighter) 
-    }
-}
-
 /// Inherits the double jump animation movement when doing an aerial (exec)
 #[skyline::hook(replace = L2CFighterCommon_sub_attack_air_inherit_jump_aerial_motion_uniq_process_exec)]
 pub unsafe extern "C" fn sub_attack_air_inherit_jump_aerial_motion_uniq_process_exec_impl(fighter: &mut L2CFighterCommon) -> L2CValue {
@@ -90,11 +60,4 @@ pub unsafe extern "C" fn sub_attack_air_inherit_jump_aerial_motion_uniq_process_
         KineticModule::change_kinetic(fighter.module_accessor, *FIGHTER_KINETIC_TYPE_MOTION_FALL);
     }
     call_original!(fighter)
-}
-
-#[utils::export(common::djc)]
-fn sub_attack_air_inherit_jump_aerial_motion_uniq_process_exec(fighter: &mut L2CFighterCommon) -> L2CValue {
-    unsafe {
-        sub_attack_air_inherit_jump_aerial_motion_uniq_process_exec_impl(fighter)
-    }
 }

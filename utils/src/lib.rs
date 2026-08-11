@@ -14,8 +14,6 @@ pub use utils_dyn::consts;
 pub use utils_dyn::singletons;
 pub use utils_dyn::util;
 
-pub use hdr_macros::*;
-
 pub use modules::*;
 
 pub fn init() {

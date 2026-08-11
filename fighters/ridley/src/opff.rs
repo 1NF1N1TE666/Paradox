@@ -1,8 +1,7 @@
-utils::import_noreturn!(common::opff::fighter_common_opff);
 use super::*;
 use globals::*;
 
-unsafe extern "C" fn init(fighter: &mut L2CFighterCommon) {
+unsafe extern "C" fn ridley_init(fighter: &mut L2CFighterCommon) {
     VarModule::off_flag(fighter.object(), vars::ridley::instance::SPECIAL_LW_IS_SKEWER);
 }
 
@@ -41,20 +40,13 @@ pub unsafe fn moveset(fighter: &mut L2CFighterCommon) {
     angled_skewer(fighter);
 }
 
-pub extern "C" fn ridley_frame_wrapper(fighter: &mut smash::lua2cpp::L2CFighterCommon) {
-    unsafe {
-        common::opff::fighter_common_opff(fighter);
-        ridley_frame(fighter);
-    }
-}
-
-pub unsafe fn ridley_frame(fighter: &mut smash::lua2cpp::L2CFighterCommon) {
+pub unsafe extern "C" fn ridley_frame(fighter: &mut smash::lua2cpp::L2CFighterCommon) {
     if let Some(info) = FrameInfo::update_and_get(fighter) {
         moveset(fighter);
     }
 }
 
 pub fn install(agent: &mut Agent) {
-    agent.on_start(init);
-    agent.on_line(Main, ridley_frame_wrapper);
+    agent.on_start(ridley_init);
+    agent.on_line(Main, ridley_frame);
 }

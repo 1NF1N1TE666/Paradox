@@ -12,7 +12,6 @@ lazy_static = "1.4.0"
 arcropolis-api = { git = "https://github.com/Raytwo/arcropolis_api" }
 prc-rs = { git = "https://github.com/ultimate-research/prc-rs", features = ["indexmap-std", "xml-feat"] }
 parking_lot = "0.11.2"
-hdr-macros = { path = "../hdr-macros" }
 utils-dyn = { package = "dynamic", path = "../dynamic" }
 ninput = { git = "https://github.com/HDR-Development/ninput" }
 skyline-web = { git = "https://github.com/skyline-rs/skyline-web" }

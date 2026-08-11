@@ -262,7 +262,7 @@ pub unsafe fn special_lw_loop_main_loop(fighter: &mut L2CFighterCommon) -> bool 
         GroundModule::correct(fighter.module_accessor, GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND_CLIFF_STOP));
     } else {}
     if fighter.is_button_trigger(Buttons::Attack) {
-        if ArticleModule::get_active_num(fighter.module_accessor, *FIGHTER_SAMUS_GENERATE_ARTICLE_BOMB) < fighter.get_param_int("param_special_lw", "bomb_max_req") as u64 {
+        if ArticleModule::get_active_num(fighter.module_accessor, *FIGHTER_SAMUS_GENERATE_ARTICLE_BOMB) < fighter.get_param_int("param_special_lw", "bomb_max_req") {
             ArticleModule::generate_article_enable(fighter.module_accessor, *FIGHTER_SAMUS_GENERATE_ARTICLE_BOMB, false, -1);
             ArticleModule::shoot_exist(fighter.module_accessor, *FIGHTER_SAMUS_GENERATE_ARTICLE_BOMB, ArticleOperationTarget(*ARTICLE_OPE_TARGET_ALL), false);
         }

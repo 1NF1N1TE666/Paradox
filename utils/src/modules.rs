@@ -1,9 +1,7 @@
-mod input;
 mod var;
 
 use std::sync::Once;
 
-pub use input::*;
 pub use var::*;
 
 use skyline::hooks::*;
@@ -13,7 +11,6 @@ const ADDITIONAL_VTABLE_ENTRIES: usize = 7;
 const HDR_BATTLE_OBJECT_MAGIC: u64 = 0x5443454A424F5F48; // H_OBJECT
 
 const VAR_MODULE_OFFSET:            isize = -1;
-const INPUT_MODULE_OFFSET:         isize = -3;
 const HDR_MAGIC_OFFSET:             isize = -5;
 const TOTAL_SIZE_OFFSET:            isize = -6;
 
@@ -109,14 +106,6 @@ pub fn clean_hdr_object(address: *mut *mut u64) {
         }
     }
 
-    if let Some(buffer_module) = get_entry::<InputModule>(address, INPUT_MODULE_OFFSET) {
-        if !buffer_module.is_null() {
-            unsafe {
-                drop(Box::from_raw(buffer_module))
-            }
-        }
-    }
-
     if is_hdr_object(address as _) {
         unsafe {
             std::alloc::dealloc(address.offset(TOTAL_SIZE_OFFSET) as _, std::alloc::Layout::from_size_align(
@@ -155,9 +144,7 @@ fn set_fighter_vtable_hook(ctx: &mut InlineCtx) {
 
     unsafe {
         let new_vtable = recreate_vtable_with_space(ctx.registers[8].x() as _);
-        let buffer_module = Box::new(InputModule::new(ctx.registers[25].x() as _));
         let var_module = Box::new(VarModule::new());
-        set_entry(new_vtable, Box::leak(buffer_module), INPUT_MODULE_OFFSET);
         set_entry(new_vtable, Box::leak(var_module), VAR_MODULE_OFFSET);
         ctx.registers[8].set_x(new_vtable as _);
     };
@@ -191,9 +178,7 @@ fn set_weapon_vtable_hook(ctx: &mut InlineCtx) {
 
     unsafe {
         let new_vtable = recreate_vtable_with_space(ctx.registers[25].x() as _);
-        let buffer_module = Box::new(InputModule::new(ctx.registers[25].x() as _));
         let var_module = Box::new(VarModule::new());
-        set_entry(new_vtable, Box::leak(buffer_module), INPUT_MODULE_OFFSET);
         set_entry(new_vtable, Box::leak(var_module), VAR_MODULE_OFFSET);
         *(ctx.registers[22].x() as *mut *mut *mut u64) = new_vtable;
     };
@@ -227,9 +212,7 @@ fn set_item_vtable_hook(ctx: &mut InlineCtx) {
 
     unsafe {
         let new_vtable = recreate_vtable_with_space(ctx.registers[23].x() as _);
-        let buffer_module = Box::new(InputModule::new(ctx.registers[28].x() as _));
         let var_module = Box::new(VarModule::new());
-        set_entry(new_vtable, Box::leak(buffer_module), INPUT_MODULE_OFFSET);
         set_entry(new_vtable, Box::leak(var_module), VAR_MODULE_OFFSET);
         *(ctx.registers[28].x() as *mut *mut *mut u64) = new_vtable as _;
     };
@@ -240,7 +223,6 @@ pub(crate) fn init() {
         set_fighter_vtable_hook,
         set_weapon_vtable_hook
     );
-    input::init();
 }
 
 #[allow(dead_code)]

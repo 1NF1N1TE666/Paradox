@@ -2,3 +2,6 @@
 **/romfs
 **/target
 **/Cargo.lock
+**/cpp.rs
+**/lua_const.rs
+**/lua_const2.txt

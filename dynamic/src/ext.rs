@@ -7,7 +7,7 @@ use smash::app::{
 use smash::lib::{lua_const::*, *};
 use smash::lua2cpp::*;
 use smash::phx::*;
-use crate::{InputModule, VarModule};
+use crate::VarModule;
 use crate::consts::*;
 
 pub trait Vec2Ext {
@@ -276,10 +276,6 @@ bitflags! {
     #[derive(Copy, Clone)]
     pub struct CatHdr: i32 {
         const Wavedash = 0x1;
-        // const ShieldDrop = 0x2;
-        const WallJumpLeft = 0x4;
-        const WallJumpRight = 0x8;
-        const Parry = 0x10;
     }
 
     #[derive(Copy, Clone)]
@@ -314,13 +310,8 @@ bitflags! {
         const FlickJump   = 0x8000;
         const GuardHold   = 0x10000;
         const SpecialRaw2 = 0x20000;
-        // We leave a blank at 0x4000 because the internal control mapping will map 1 << InputKind to the button bitfield, and so our shorthop button
-        // would get mapped to TiltAttack (issue #776)
         const TiltAttack  = 0x80000;
-        const Parry = 0x100000;
         const CStickOverride = 0x200000;
-        const RivalsWallJump = 0x400000;
-        const ParryManual = 0x800000;
 
         const SpecialAll  = 0x20802;
         const AttackAll   = 0x201;
@@ -400,8 +391,6 @@ impl FastShift for L2CFighterBase {
 }
 
 pub trait BomaExt {
-    unsafe fn clear_commands<T: Into<CommandCat>>(&mut self, fighter_pad_cmd_flag: T);
-    unsafe fn get_command_life<T: Into<CommandCat>>(&mut self, fighter_pad_cmd_flag: T) -> u8;
     unsafe fn is_cat_flag<T: Into<CommandCat>>(&mut self, fighter_pad_cmd_flag: T) -> bool;
     unsafe fn is_cat_flag_all<T: Into<CommandCat>>(&mut self, fighter_pad_cmd_flag: T) -> bool;
     unsafe fn is_pad_flag(&mut self, pad_flag: PadFlag) -> bool;
@@ -515,7 +504,6 @@ pub trait BomaExt {
     unsafe fn check_aerial_cancel(&mut self) -> bool;
     unsafe fn check_dash_cancel(&mut self) -> bool;
     unsafe fn check_wall_jump_cancel(&mut self) -> bool;
-    unsafe fn sub_check_command_parry(&mut self) -> L2CValue;
     unsafe fn check_land_cancel(&mut self, landing_lag: Option<f32>) -> bool;
     unsafe fn check_paradox_funcs(&mut self) -> bool;
     unsafe fn check_special_cancel(&mut self);
@@ -527,31 +515,6 @@ pub trait BomaExt {
 }
 
 impl BomaExt for BattleObjectModuleAccessor {
-    unsafe fn clear_commands<T: Into<CommandCat>>(&mut self, fighter_pad_cmd_flag: T) {
-        let cat = fighter_pad_cmd_flag.into();
-        let (cat, bits) = match cat {
-            CommandCat::Cat1(cat) => (0, cat.bits()),
-            CommandCat::Cat2(cat) => (1, cat.bits()),
-            CommandCat::Cat3(cat) => (2, cat.bits()),
-            CommandCat::Cat4(cat) => (3, cat.bits()),
-            CommandCat::CatHdr(cat) => (4, cat.bits()),
-        };
-
-        crate::modules::InputModule::clear_commands(self.object(), cat, bits);
-    }
-
-    unsafe fn get_command_life<T: Into<CommandCat>>(&mut self, fighter_pad_cmd_flag: T) -> u8 {
-        let cat = fighter_pad_cmd_flag.into();
-        let (cat, bits) = match cat {
-            CommandCat::Cat1(cat) => (0, cat.bits()),
-            CommandCat::Cat2(cat) => (1, cat.bits()),
-            CommandCat::Cat3(cat) => (2, cat.bits()),
-            CommandCat::Cat4(cat) => (3, cat.bits()),
-            CommandCat::CatHdr(cat) => (4, cat.bits()),
-        };
-
-        return crate::modules::InputModule::get_command_life(self.object(), cat, bits);
-    }
 
     unsafe fn is_cat_flag<T: Into<CommandCat>>(&mut self, fighter_pad_cmd_flag: T) -> bool {
         let cat = fighter_pad_cmd_flag.into();
@@ -1234,17 +1197,6 @@ impl BomaExt for BattleObjectModuleAccessor {
         }
         crate::VarModule::off_flag(self.object(), vars::common::status::ENABLE_SPECIAL_WALLJUMP);
         false
-    }
-
-    unsafe fn sub_check_command_parry(&mut self) -> L2CValue {
-        if self.get_int(*FIGHTER_INSTANCE_WORK_ID_INT_DISABLE_GUARD_FRAME) != 0
-        || self.is_flag(*FIGHTER_INSTANCE_WORK_ID_FLAG_DISABLE_GUARD) {
-            return false.into();
-        }
-        if self.is_cat_flag(CatHdr::Parry) {
-            return true.into();
-        }
-        return false.into();
     }
 
     // Uses an optional landing_lag parameter

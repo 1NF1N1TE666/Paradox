@@ -47,7 +47,6 @@ fn nro_hook(info: &skyline::nro::NroInfo) {
             sub_transition_group_check_ground_attack,
             sub_transition_group_check_air_escape,
             sub_transition_group_check_ground_escape,
-            sub_transition_group_check_ground_guard,
             sub_transition_group_check_ground,
             sys_line_status_system_control_hook,
             status_FallSub_hook,
@@ -199,39 +198,6 @@ unsafe fn sub_transition_group_check_ground_escape(fighter: &mut L2CFighterCommo
         return false.into()
     }
     call_original!(fighter)
-}
-
-#[skyline::hook(replace = L2CFighterCommon_sub_transition_group_check_ground_guard)]
-unsafe fn sub_transition_group_check_ground_guard(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if fighter.is_cat_flag(Cat1::JumpButton)
-    || fighter.is_cat_flag(Cat1::Jump)
-    || fighter.is_button_on(Buttons::Catch) {
-        return false.into()
-    }
-
-    if fighter.global_table[SITUATION_KIND] != SITUATION_KIND_GROUND {
-        return false.into();
-    }
-
-    if fighter.global_table[0x4f].get_bool() {
-        let callable: extern "C" fn(&mut L2CFighterCommon) -> L2CValue = std::mem::transmute(fighter.global_table[0x4f].get_ptr());
-        if callable(fighter).get_bool() {
-            return true.into();
-        }
-    }
-
-    if WorkModule::is_enable_transition_term(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_GUARD_ON) {
-        if fighter.sub_check_command_parry().get_bool() {
-            fighter.change_status(FIGHTER_STATUS_KIND_GUARD_OFF.into(), false.into());
-            return true.into();
-        }
-        if fighter.sub_check_command_guard().get_bool() {
-            fighter.change_status(FIGHTER_STATUS_KIND_GUARD_ON.into(), true.into());
-            return true.into();
-        }
-    }
-
-    return false.into();
 }
 
 #[skyline::hook(replace = L2CFighterCommon_sub_transition_group_check_ground)]
