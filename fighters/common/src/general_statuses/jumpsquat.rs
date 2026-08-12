@@ -29,7 +29,7 @@ fn nro_hook(info: &skyline::nro::NroInfo) {
 unsafe fn status_JumpSquat(fighter: &mut L2CFighterCommon) -> L2CValue {
     let lr_update = fighter.sub_status_JumpSquat_check_stick_lr_update();
     fighter.status_JumpSquat_common(lr_update);
-    if fighter.is_cat_flag(CatHdr::Wavedash) {
+    if fighter.is_button_on(Buttons::Jump | Buttons::FlickJump) & fighter.is_button_on(Buttons::Guard) {
         VarModule::on_flag(fighter.battle_object, vars::common::instance::ENABLE_AIR_ESCAPE_JUMPSQUAT);
     }
     fighter.sub_shift_status_main(L2CValue::Ptr(status_JumpSquat_Main as *const () as _))
