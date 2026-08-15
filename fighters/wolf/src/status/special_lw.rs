@@ -13,7 +13,7 @@ pub unsafe extern "C" fn special_lw_main(fighter: &mut L2CFighterCommon) -> L2CV
 }
 
 unsafe extern "C" fn special_lw_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdash_cancel() {
+    if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdodge_cancel() {
         return 0.into();
     }
 
@@ -79,7 +79,7 @@ pub unsafe extern "C" fn special_lw_hit_main(fighter: &mut L2CFighterCommon) -> 
 
 unsafe extern "C" fn special_lw_hit_main_loop(fighter: &mut L2CFighterCommon) -> L2CValue {
     if MotionModule::is_end(fighter.module_accessor) {
-        if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdash_cancel() {
+        if fighter.check_dash_cancel() || fighter.check_jump_cancel(true) || fighter.check_airdodge_cancel() {
             return 0.into();
         }
         if fighter.is_button_off(Buttons::Special) {

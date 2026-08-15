@@ -5,11 +5,6 @@
 pub mod acmd;
 
 pub mod opff;
-pub mod status;
-
-// articles
-
-mod drcapsule;
 
 use smash::{
     lib::{
@@ -45,10 +40,6 @@ use smashline::*;
 
 pub fn install() {
     let agent = &mut Agent::new("mariod");
-    acmd::install(agent);
     opff::install(agent);
-    status::install(agent);
     agent.install();
-
-    drcapsule::install();
 }

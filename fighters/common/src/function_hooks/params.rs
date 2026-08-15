@@ -33,6 +33,9 @@ pub unsafe fn get_param_float_replace(module_accessor: u64, param_type: u64, par
         if param_type == hash40("run_accel_add") {
             return 0.0;
         }
+        if param_type == hash40("mini_jump_y") {
+            return WorkModule::get_param_float(boma_reference, hash40("jump_y"), 0) * 0.5;
+        }
         if param_type == hash40("air_accel_x_add") {
             return 0.0;
         }
@@ -170,7 +173,7 @@ pub unsafe fn get_param_float_replace(module_accessor: u64, param_type: u64, par
                 return -1.0;
             }
             if param_hash == hash40("landing_frame_escape_air_slide_max") {
-                return 10.0;
+                return 12.0;
             }
             if param_hash == hash40("landing_frame_escape_air_slide") {
                 return 1.0;
@@ -265,11 +268,6 @@ pub unsafe fn get_param_float_replace(module_accessor: u64, param_type: u64, par
                     return 30.0;
                 }
             }
-            if param_type == hash40("mini_jump_y") {
-                if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
-                    return 30.0;
-                }
-            }
             if param_type == hash40("jump_aerial_y") {
                 if VarModule::is_flag(boma_reference.object(), vars::samus::instance::SPEEDBOOSTER_ON) {
                     return 30.0;
@@ -344,7 +342,7 @@ pub unsafe fn get_param_int_replace(module_accessor: u64, param_type: u64, param
 
     if boma_reference.is_fighter() {
         if param_type == hash40("jump_squat_frame") {
-            return 1;
+            return 4;
         }
         if param_type == hash40("landing_heavy_frame") {
             return 1;

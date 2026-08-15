@@ -29,27 +29,14 @@ use skyline::libc::*;
 
 #[macro_use] extern crate smash_script;
 
-pub mod djc;
-pub mod misc;
 pub mod opff;
 pub mod general_statuses;
 pub mod function_hooks;
 
-// for storing what team color the last attacker had. used in a couple different common files
 pub static mut LAST_ATTACK_TEAM_COLOR: i32 = 0;
 
-extern "C" fn common_init(fighter: &mut L2CFighterCommon) {
-    VarModule::off_flag(fighter.battle_object, vars::common::instance::IS_INIT);
-}
-
 pub fn install() {
-    djc::install();
-    misc::install();
     opff::install();
     general_statuses::install();
     function_hooks::install();
-
-    Agent::new("fighter")
-        .on_start(common_init)
-        .install();
 }

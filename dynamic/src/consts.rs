@@ -218,13 +218,6 @@ pub mod vars {
         }
     }
 
-    pub mod mariod_drcapsule {
-        pub mod instance {
-            // ints
-            pub const DAMAGE: i32 = 0x0100;
-        }
-    }
-
     pub mod metaknight {
         pub mod instance {
             // flags
