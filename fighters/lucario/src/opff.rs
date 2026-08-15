@@ -85,10 +85,10 @@ unsafe fn special_lw(fighter: &mut L2CFighterCommon) {
     
     if fighter.is_status_one_of(&[*FIGHTER_LUCARIO_STATUS_KIND_SPECIAL_LW_APPEAR, *FIGHTER_LUCARIO_STATUS_KIND_SPECIAL_LW_END]) {
         if !VarModule::is_flag(fighter.battle_object, vars::lucario::instance::AURA_MAXIMUS) {
-            if DamageModule::damage(fighter.module_accessor, 0) < 100.0 {
+            if DamageModule::damage(fighter.module_accessor, 0) < 150.0 {
                 VarModule::on_flag(fighter.battle_object, vars::lucario::instance::AURA_MAXIMUS);
                 VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_DAMAGE_STORAGE, DamageModule::damage(fighter.module_accessor, 0));
-                DamageModule::add_damage(fighter.module_accessor, 100.0 - DamageModule::damage(fighter.module_accessor, 0), 0);
+                DamageModule::add_damage(fighter.module_accessor, 150.0 - DamageModule::damage(fighter.module_accessor, 0), 0);
             }
         }
 

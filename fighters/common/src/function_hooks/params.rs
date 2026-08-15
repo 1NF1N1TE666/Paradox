@@ -46,7 +46,7 @@ pub unsafe fn get_param_float_replace(module_accessor: u64, param_type: u64, par
             return WorkModule::get_param_float(boma_reference, hash40("air_speed_y_stable"), 0);
         }
         if param_type == hash40("dive_speed_y") { 
-            return WorkModule::get_param_float(boma_reference, hash40("air_speed_y_stable"), 0);
+            return WorkModule::get_param_float(boma_reference, hash40("air_speed_y_stable"), 0) * 2.0;
         }
         if param_type == hash40("air_ground_speed_brake") {
             return 0.0;
