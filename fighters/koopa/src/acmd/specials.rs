@@ -91,11 +91,7 @@ unsafe extern "C" fn game_specialhi(agent: &mut L2CAgentBase) {
     if is_excute(agent) {
         WorkModule::on_flag(boma, *FIGHTER_KOOPA_STATUS_SPECIAL_HI_FLAG4);
     }
-    wait(lua_state, 1.0);
-    if is_excute(agent) {
-        HitModule::set_status_all(boma, app::HitStatus(*HIT_STATUS_NORMAL), 0);
-    }
-    wait(lua_state, 3.0);
+    wait(lua_state, 4.0);
     if is_excute(agent) {
         WorkModule::on_flag(boma, *FIGHTER_KOOPA_STATUS_SPECIAL_HI_FLAG4);
     }
@@ -105,6 +101,7 @@ unsafe extern "C" fn game_specialhi(agent: &mut L2CAgentBase) {
     }
     wait(lua_state, 15.0);
     if is_excute(agent) {
+        HitModule::set_status_all(boma, app::HitStatus(*HIT_STATUS_NORMAL), 0);
         AttackModule::clear_all(boma);
         KineticModule::set_consider_ground_friction(boma, true, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
         WorkModule::on_flag(boma, *FIGHTER_KOOPA_STATUS_SPECIAL_HI_FLAG1);
@@ -142,7 +139,7 @@ unsafe extern "C" fn game_specialairhi(agent: &mut L2CAgentBase) {
 unsafe extern "C" fn game_speciallw(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     let boma = agent.boma();
-    FT_MOTION_RATE(agent, 0.09);
+    FT_MOTION_RATE(agent, 0.36);
     frame(lua_state, 11.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
@@ -154,11 +151,11 @@ unsafe extern "C" fn game_speciallw(agent: &mut L2CAgentBase) {
         AttackModule::clear_all(boma);
         WorkModule::on_flag(boma, *FIGHTER_KOOPA_STATUS_SPECIAL_LW_FLAG1);
     }
-    FT_MOTION_RATE(agent, 0.96);
+    FT_MOTION_RATE(agent, 0.83);
     wait(lua_state, 23.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
-        ATTACK(agent, 0, 0, Hash40::new("top"), 24.0, 80, 120, 0, 0, 8.0, 0.0, 6.0, 0.0, None, None, None, 1.0, 1.0, *ATTACK_SETOFF_KIND_ON, *ATTACK_LR_CHECK_POS, true, 0, 0.0, 0, false, false, false, false, true, *COLLISION_SITUATION_MASK_GA, *COLLISION_CATEGORY_MASK_ALL, *COLLISION_PART_MASK_ALL, false, Hash40::new("collision_attr_normal"), *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_BODY);
+        ATTACK(agent, 0, 0, Hash40::new("top"), 24.0, 80, 120, 0, 0, 8.0, 0.0, 8.0, 0.0, None, None, None, 1.0, 1.0, *ATTACK_SETOFF_KIND_ON, *ATTACK_LR_CHECK_POS, true, 0, 0.0, 0, false, false, false, false, true, *COLLISION_SITUATION_MASK_GA, *COLLISION_CATEGORY_MASK_ALL, *COLLISION_PART_MASK_ALL, false, Hash40::new("collision_attr_normal"), *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_BODY);
     }
 }
 
@@ -170,7 +167,7 @@ unsafe extern "C" fn game_specialairlw(agent: &mut L2CAgentBase) {
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
         WorkModule::on_flag(boma, *FIGHTER_KOOPA_STATUS_SPECIAL_LW_FLAG1);
-        ATTACK(agent, 0, 0, Hash40::new("top"), 24.0, 80, 120, 0, 0, 8.0, 0.0, 6.0, 0.0, None, None, None, 1.0, 1.0, *ATTACK_SETOFF_KIND_ON, *ATTACK_LR_CHECK_POS, false, 0, 0.0, 0, false, false, false, false, true, *COLLISION_SITUATION_MASK_GA, *COLLISION_CATEGORY_MASK_ALL, *COLLISION_PART_MASK_ALL, false, Hash40::new("collision_attr_normal"), *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_BODY);
+        ATTACK(agent, 0, 0, Hash40::new("top"), 24.0, 80, 120, 0, 0, 8.0, 0.0, 8.0, 0.0, None, None, None, 1.0, 1.0, *ATTACK_SETOFF_KIND_ON, *ATTACK_LR_CHECK_POS, false, 0, 0.0, 0, false, false, false, false, true, *COLLISION_SITUATION_MASK_GA, *COLLISION_CATEGORY_MASK_ALL, *COLLISION_PART_MASK_ALL, false, Hash40::new("collision_attr_normal"), *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_BODY);
     }
 }
 

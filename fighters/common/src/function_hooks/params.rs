@@ -188,6 +188,33 @@ pub unsafe fn get_param_float_replace(module_accessor: u64, param_type: u64, par
                     return WorkModule::get_param_float(boma_reference, hash40("run_speed_max"), 0);
                 }
             }
+            if param_hash == hash40("capture_cut_ground_speed") {
+                return WorkModule::get_param_float(boma_reference, hash40("walk_speed_max"), 0);
+            }
+            if param_hash == hash40("capture_cut_speed_x") {
+                return WorkModule::get_param_float(boma_reference, hash40("walk_speed_max"), 0);
+            }
+            if param_hash == hash40("capture_cut_y") {
+                return WorkModule::get_param_float(boma_reference, hash40("mini_jump_y"), 0);
+            }
+            if param_hash == hash40("catch_rebound_speed_x") {
+                return WorkModule::get_param_float(boma_reference, hash40("walk_speed_max"), 0);
+            }
+            if param_hash == hash40("catch_rebound_jump_speed_x") {
+                return WorkModule::get_param_float(boma_reference, hash40("walk_speed_max"), 0);
+            }
+            if param_hash == hash40("catch_rebound_jump_y") {
+                return WorkModule::get_param_float(boma_reference, hash40("mini_jump_y"), 0);
+            }
+            if param_hash == hash40("cliff_robbed_speed_x") {
+                return WorkModule::get_param_float(boma_reference, hash40("walk_speed_max"), 0);
+            }
+            if param_hash == hash40("cliff_robbed_speed_y") {
+                return WorkModule::get_param_float(boma_reference, hash40("mini_jump_y"), 0);
+            }
+            if param_hash == hash40("pass_speed_y") {
+                return -WorkModule::get_param_float(boma_reference, hash40("air_accel_y"), 0);
+            }
         }
         if boma_reference.kind() == *FIGHTER_KIND_IKE {
             if param_type == hash40("param_special_s") { 

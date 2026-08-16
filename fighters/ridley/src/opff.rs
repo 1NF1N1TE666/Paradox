@@ -5,6 +5,14 @@ unsafe extern "C" fn ridley_init(fighter: &mut L2CFighterCommon) {
     VarModule::off_flag(fighter.object(), vars::ridley::instance::SPECIAL_LW_IS_SKEWER);
 }
 
+unsafe fn scale(fighter: &mut L2CFighterCommon) {
+    if ModelModule::scale(fighter.module_accessor) == WorkModule::get_param_float(fighter.module_accessor, hash40("scale"), 0) {
+        ModelModule::set_scale(fighter.module_accessor, 1.25);
+        AttackModule::set_attack_scale(fighter.module_accessor, 1.25, true);
+        GrabModule::set_size_mul(fighter.module_accessor, 1.25);
+    };
+}
+
 unsafe fn rotate_bone(boma: &mut BattleObjectModuleAccessor, max_angle: f32, min_angle: f32, strength: f32) {
     let mut angle = min_angle.abs();
     if strength > 0.0 {
@@ -37,6 +45,7 @@ unsafe fn angled_skewer(fighter: &mut L2CFighterCommon) {
 }
 
 pub unsafe fn moveset(fighter: &mut L2CFighterCommon) {
+    scale(fighter);
     angled_skewer(fighter);
 }
 
