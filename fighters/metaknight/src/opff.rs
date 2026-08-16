@@ -29,18 +29,6 @@ unsafe fn cancel_frames(boma: &mut BattleObjectModuleAccessor) {
     }
 }
 
-unsafe fn glideattack(fighter: &mut L2CFighterCommon) {
-    if fighter.is_status(*FIGHTER_STATUS_KIND_GLIDE_ATTACK) {
-        if CancelModule::is_enable_cancel(fighter.module_accessor) {
-            let cancel_module = *(fighter.module_accessor as *mut BattleObjectModuleAccessor as *mut u64).add(0x128 / 8) as *const u64;
-            *(((cancel_module as u64) + 0x1c) as *mut bool) = false;
-        }
-        if MotionModule::is_end(fighter.module_accessor) {
-            fighter.change_status_req(*FIGHTER_STATUS_KIND_FALL_SPECIAL, true);
-        }
-    }
-}
-
 unsafe fn special_s(fighter: &mut L2CFighterCommon) {
     if fighter.is_status(*FIGHTER_METAKNIGHT_STATUS_KIND_SPECIAL_S_RUSH)
     && AttackModule::is_infliction_status(fighter.module_accessor, *COLLISION_KIND_MASK_ALL) {
@@ -51,7 +39,6 @@ unsafe fn special_s(fighter: &mut L2CFighterCommon) {
 
 pub unsafe fn moveset(fighter: &mut smash::lua2cpp::L2CFighterCommon, boma: &mut BattleObjectModuleAccessor) {
     cancel_frames(boma);
-    glideattack(fighter);
     special_s(fighter);
 }
 
