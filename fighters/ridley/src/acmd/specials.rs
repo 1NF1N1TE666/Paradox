@@ -92,6 +92,37 @@ unsafe extern "C" fn effect_specialairnattack(agent: &mut L2CAgentBase) {
     }
 }
 
+unsafe extern "C" fn game_specialsstart(agent: &mut L2CAgentBase) {
+    let lua_state = agent.lua_state_agent;
+    let boma = agent.boma();
+    frame(lua_state, 21.0);
+    if is_excute(agent) {
+        WorkModule::on_flag(boma, *FIGHTER_RIDLEY_STATUS_SPECIAL_S_FLAG_START_JUMP);
+    }
+    wait(lua_state, 2.0);
+    if is_excute(agent) {
+        GrabModule::set_rebound(boma, true);
+    }
+    wait(lua_state, 1.0);
+    if is_excute(agent) {
+        CATCH(agent, 0, Hash40::new("top"), 8.0, 0.0, 8.0, 16.0, None, None, None, *FIGHTER_STATUS_KIND_CATCHED_RIDLEY, *COLLISION_SITUATION_MASK_GA);
+        GrabModule::set_constraint(boma, 0, true);
+    }
+    wait(lua_state, 6.0);
+    if is_excute(agent) {
+        notify_event_msc_cmd!(agent, Hash40::new_raw(0x2127e37c07), *GROUND_CLIFF_CHECK_KIND_ALWAYS);
+    }
+    wait(lua_state, 9.0);
+    if is_excute(agent) {
+        grab!(agent, *MA_MSC_CMD_GRAB_CLEAR_ALL);
+        GrabModule::set_rebound(boma, false);
+    }
+    wait(lua_state, 10.0);
+    if is_excute(agent) {
+        WorkModule::on_flag(boma, *FIGHTER_RIDLEY_STATUS_SPECIAL_S_FLAG_ENABLE_GRAVITY);
+    }
+}
+
 unsafe extern "C" fn game_specialsdrag(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     let boma = agent.boma();
@@ -249,7 +280,7 @@ unsafe extern "C" fn game_specialairhichargehi(agent: &mut L2CAgentBase) {
 unsafe extern "C" fn game_speciallwstab(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     let boma: &mut BattleObjectModuleAccessor = agent.boma();
-    FT_MOTION_RATE(agent, 2.13333);
+    FT_MOTION_RATE(agent, 2.3);
     frame(lua_state, 30.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
@@ -563,6 +594,8 @@ pub fn install(agent: &mut Agent) {
     agent.acmd("effect_specialairnattack", effect_specialairnattack, Priority::Low);
     agent.acmd("sound_specialairnattack", sound_specialnattack, Priority::Low);
     agent.acmd("expression_specialairnattack", expression_specialnattack, Priority::Low);
+    agent.acmd("game_specialsstart", game_specialsstart, Priority::Low);
+    agent.acmd("game_specialairsstart", game_specialsstart, Priority::Low);
     agent.acmd("game_specialsdrag", game_specialsdrag, Priority::Low);
     agent.acmd("game_specialsdragf", game_specialsdragf, Priority::Low);
     agent.acmd("game_specialsdragcliff", game_specialsdragcliff, Priority::Low);

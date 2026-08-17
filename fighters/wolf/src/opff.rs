@@ -2,7 +2,8 @@ use super::*;
 use globals::*;
 
 unsafe fn special_s_disable(fighter: &mut L2CFighterCommon) {
-    if fighter.is_situation(*SITUATION_KIND_GROUND | *SITUATION_KIND_CLIFF) || fighter.is_status_one_of(&[
+    if fighter.is_situation(*SITUATION_KIND_GROUND | *SITUATION_KIND_CLIFF) 
+    || fighter.is_status_one_of(&[
         *FIGHTER_STATUS_KIND_DEAD,
         *FIGHTER_STATUS_KIND_REBIRTH,
         *FIGHTER_STATUS_KIND_WIN,
@@ -23,8 +24,6 @@ unsafe fn special_s_disable(fighter: &mut L2CFighterCommon) {
 
 unsafe fn shine_jump_cancel(fighter: &mut L2CFighterCommon) {
     if fighter.is_status_one_of(&[
-        *FIGHTER_STATUS_KIND_SPECIAL_N,
-        *FIGHTER_STATUS_KIND_SPECIAL_HI,
         *FIGHTER_STATUS_KIND_SPECIAL_LW,
         *FIGHTER_WOLF_STATUS_KIND_SPECIAL_LW_LOOP,
         *FIGHTER_WOLF_STATUS_KIND_SPECIAL_LW_END

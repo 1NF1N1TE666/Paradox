@@ -74,9 +74,39 @@ unsafe extern "C" fn game_specialairnloop(agent: &mut L2CAgentBase) {
     }
 }
 
+unsafe extern "C" fn game_specialsstart(agent: &mut L2CAgentBase) {
+    let lua_state = agent.lua_state_agent;
+    let boma = agent.boma();
+    FT_MOTION_RATE(agent, 0.6);
+}
+
+unsafe extern "C" fn game_specials(agent: &mut L2CAgentBase) {
+    let lua_state = agent.lua_state_agent;
+    let boma = agent.boma();
+    FT_MOTION_RATE(agent, 1.0);
+    if is_excute(agent) {
+        JostleModule::set_status(boma, false);
+    }
+    frame(lua_state, 2.0);
+    if is_excute(agent) {
+        ArticleModule::generate_article(boma, *FIGHTER_FALCO_GENERATE_ARTICLE_ILLUSION, false, -1);
+    }
+    frame(lua_state, 4.0);
+    if is_excute(agent) {
+        ArticleModule::generate_article(boma, *FIGHTER_FALCO_GENERATE_ARTICLE_ILLUSION, false, -1);
+    }
+}
+
+unsafe extern "C" fn game_specialhihold(agent: &mut L2CAgentBase) {
+    let lua_state = agent.lua_state_agent;
+    let boma = agent.boma();
+    FT_MOTION_RATE(agent, 0.535);
+}
+
 unsafe extern "C" fn game_specialhi(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     let boma = agent.boma();
+    FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
         JostleModule::set_status(boma, false);
     }
@@ -231,8 +261,12 @@ pub fn install(agent: &mut Agent) {
     agent.acmd("game_specialairnstart", game_specialairnstart, Priority::Low);
     agent.acmd("game_specialnloop", game_specialnloop, Priority::Low);
     agent.acmd("game_specialairnloop", game_specialairnloop, Priority::Low);
-    agent.acmd("game_specialhihold", acmd_stub, Priority::Low);
-    agent.acmd("game_specialhiholdair", acmd_stub, Priority::Low);
+    agent.acmd("game_specialsstart", game_specialsstart, Priority::Low);
+    agent.acmd("game_specialairsstart", game_specialsstart, Priority::Low);
+    agent.acmd("game_specials", game_specials, Priority::Low);
+    agent.acmd("game_specialairs", game_specials, Priority::Low);
+    agent.acmd("game_specialhihold", game_specialhihold, Priority::Low);
+    agent.acmd("game_specialhiholdair", game_specialhihold, Priority::Low);
     agent.acmd("game_specialhi", game_specialhi, Priority::Low);
     agent.acmd("game_speciallw", game_speciallw, Priority::Low);
     agent.acmd("game_specialairlw", game_speciallw, Priority::Low);
