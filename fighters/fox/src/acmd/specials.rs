@@ -3,7 +3,7 @@ use super::*;
 unsafe extern "C" fn game_specialnstart(agent: &mut L2CAgentBase) {
     let boma = agent.boma();
     let lua_state = agent.lua_state_agent;
-    FT_MOTION_RATE(agent, 0.5);
+    FT_MOTION_RATE(agent, 0.25);
     frame(lua_state, 4.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
@@ -16,7 +16,7 @@ unsafe extern "C" fn game_specialnstart(agent: &mut L2CAgentBase) {
 unsafe extern "C" fn game_specialairnstart(agent: &mut L2CAgentBase) {
     let boma = agent.boma();
     let lua_state = agent.lua_state_agent;
-    FT_MOTION_RATE(agent, 0.5);
+    FT_MOTION_RATE(agent, 0.25);
     frame(lua_state, 4.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
@@ -29,7 +29,6 @@ unsafe extern "C" fn game_specialairnstart(agent: &mut L2CAgentBase) {
 unsafe extern "C" fn game_specialnloop(agent: &mut L2CAgentBase) {
     let boma = agent.boma();
     let lua_state = agent.lua_state_agent;
-    frame(lua_state, 2.0);
     if is_excute(agent) {
         WorkModule::on_flag(boma, *FIGHTER_FOX_BLASTER_STATUS_WORK_ID_FLAG_LOOP_ACCEPT);
     }
@@ -40,18 +39,16 @@ unsafe extern "C" fn game_specialnloop(agent: &mut L2CAgentBase) {
             ArticleModule::change_motion(boma, *FIGHTER_FOX_GENERATE_ARTICLE_BLASTER, Hash40::new("loop"), false, -1.0);
         }
     }
-    FT_MOTION_RATE(agent, 2.0);
-    wait(lua_state, 7.0);
-    FT_MOTION_RATE(agent, 1.0);
+    wait(lua_state, 12.0);
     if is_excute(agent) {
         WorkModule::off_flag(boma, *FIGHTER_FOX_BLASTER_STATUS_WORK_ID_FLAG_LOOP_ACCEPT);
     }
+    FT_MOTION_RATE(agent, 0.2);
 }
 
 unsafe extern "C" fn game_specialairnloop(agent: &mut L2CAgentBase) {
     let boma = agent.boma();
     let lua_state = agent.lua_state_agent;
-    frame(lua_state, 2.0);
     if is_excute(agent) {
         WorkModule::on_flag(boma, *FIGHTER_FOX_BLASTER_STATUS_WORK_ID_FLAG_LOOP_ACCEPT);
     }
@@ -62,18 +59,17 @@ unsafe extern "C" fn game_specialairnloop(agent: &mut L2CAgentBase) {
             ArticleModule::change_motion(boma, *FIGHTER_FOX_GENERATE_ARTICLE_BLASTER, Hash40::new("loop"), false, -1.0);
         }
     }
-    FT_MOTION_RATE(agent, 2.0);
-    wait(lua_state, 7.0);
-    FT_MOTION_RATE(agent, 1.0);
+    wait(lua_state, 12.0);
     if is_excute(agent) {
         WorkModule::off_flag(boma, *FIGHTER_FOX_BLASTER_STATUS_WORK_ID_FLAG_LOOP_ACCEPT);
     }
+    FT_MOTION_RATE(agent, 0.2);
 }
 
 unsafe extern "C" fn game_specialsstart(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     let boma = agent.boma();
-    FT_MOTION_RATE(agent, 0.42);
+    FT_MOTION_RATE(agent, 0.353);
 }
 
 unsafe extern "C" fn game_specials(agent: &mut L2CAgentBase) {

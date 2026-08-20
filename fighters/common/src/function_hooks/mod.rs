@@ -1,7 +1,7 @@
 use super::*;
 use crate::globals::*;
 
-pub mod attack_and_knockback;
+pub mod damage;
 pub mod collision;
 pub mod energy;
 pub mod jumps;
@@ -14,7 +14,7 @@ pub mod transition;
 mod lua_bind_hook;
 
 pub fn install() {
-    attack_and_knockback::install();
+    damage::install();
     collision::install();
     energy::install();
     jumps::install();

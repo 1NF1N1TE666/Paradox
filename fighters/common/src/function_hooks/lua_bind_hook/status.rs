@@ -5,9 +5,7 @@ use globals::*;
 //== StatusModule::init_settings
 //=================================================================
 #[skyline::hook(replace=StatusModule::init_settings)]
-unsafe fn init_settings_hook(boma: &mut BattleObjectModuleAccessor, mut situation: smash::app::SituationKind, kinetic_type: i32, ground_correct_kind: u32,
-                             ground_cliff_check_kind: smash::app::GroundCliffCheckKind, jostle: bool,
-                             keep_flag: i32, keep_int: i32, keep_float: i32, arg10: i32) -> u64 {
+unsafe fn init_settings_hook(boma: &mut BattleObjectModuleAccessor, mut situation: smash::app::SituationKind, kinetic_type: i32, ground_correct_kind: u32, ground_cliff_check_kind: smash::app::GroundCliffCheckKind, jostle: bool, keep_flag: i32, keep_int: i32, keep_float: i32, arg10: i32) -> u64 {
     let id = WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize;
     let fighter_kind = boma.kind();
     let status_kind = StatusModule::status_kind(boma);
@@ -15,15 +13,15 @@ unsafe fn init_settings_hook(boma: &mut BattleObjectModuleAccessor, mut situatio
     let mut cliff_check_kind = ground_cliff_check_kind;
     let mut kinetic_type = kinetic_type.clone();
     let mut ground_correct_kind = ground_correct_kind.clone();
-                                
     ground_correct_kind = super::ground::init_settings_edges(boma, situation, kinetic_type, ground_correct_kind, ground_cliff_check_kind, jostle, keep_flag, keep_int, keep_float, arg10);
 
     if boma.is_fighter() {
-        
-        if boma.is_prev_situation(*SITUATION_KIND_AIR)
-        && ( situation.0 == *SITUATION_KIND_GROUND
-            || (boma.is_situation(*SITUATION_KIND_GROUND) && situation.0 == *SITUATION_KIND_NONE) )
-        {
+        if boma.is_prev_situation(*SITUATION_KIND_AIR) && (
+            situation.0 == *SITUATION_KIND_GROUND || (
+                boma.is_situation(*SITUATION_KIND_GROUND) 
+                && situation.0 == *SITUATION_KIND_NONE
+            ) 
+        ) {
             if kinetic_type == *FIGHTER_KINETIC_TYPE_MOTION {
                 kinetic_type = *FIGHTER_KINETIC_TYPE_MOTION_IGNORE_NORMAL;
             }
@@ -35,33 +33,19 @@ unsafe fn init_settings_hook(boma: &mut BattleObjectModuleAccessor, mut situatio
             *FIGHTER_STATUS_KIND_CAPTURE_PULLED,
             *FIGHTER_STATUS_KIND_CAPTURE_WAIT,
             *FIGHTER_STATUS_KIND_CAPTURE_DAMAGE,
-            *FIGHTER_STATUS_KIND_THROWN,
-            *FIGHTER_STATUS_KIND_CATCHED_GANON,
-            *FIGHTER_STATUS_KIND_CATCHED_AIR_GANON,
-            *FIGHTER_STATUS_KIND_CATCHED_REFLET,
-            *FIGHTER_STATUS_KIND_CATCHED_RIDLEY,
-            *FIGHTER_STATUS_KIND_CAPTURE_JACK_WIRE,
-            *FIGHTER_STATUS_KIND_CAPTURE_MASTER_SWORD])
-        && situation.0 == *SITUATION_KIND_AIR
-        {
+            *FIGHTER_STATUS_KIND_THROWN
+        ]) && situation.0 == *SITUATION_KIND_AIR {
             WorkModule::set_int(boma, 0, *FIGHTER_INSTANCE_WORK_ID_INT_FRAME_IN_AIR);
         }
 
         JostleModule::set_team(boma, 0);
-
-        if boma.is_prev_status_one_of(&[*FIGHTER_STATUS_KIND_ESCAPE_AIR, *FIGHTER_STATUS_KIND_ESCAPE_AIR_SLIDE, *FIGHTER_STATUS_KIND_JUMP_SQUAT])
-        && boma.is_status(*FIGHTER_STATUS_KIND_LANDING)
-        && GroundModule::is_passable_ground(boma) {
-            ControlModule::reset_flick_y(boma);
-        }
 
         if ground_correct_kind == *GROUND_CORRECT_KIND_GROUND_CLIFF_STOP_ATTACK as u32 {
             ground_correct_kind = *GROUND_CORRECT_KIND_GROUND_CLIFF_STOP as u32;
         }
     }
 
-    let object = boma.object();
-    if VarModule::has_var_module(object) {
+    if VarModule::has_var_module(boma.object()) {
         let mut mask = 0;
         if keep_flag != *FIGHTER_STATUS_WORK_KEEP_FLAG_ALL_FLAG {
             mask += VarModule::RESET_STATUS_FLAG;
@@ -73,7 +57,7 @@ unsafe fn init_settings_hook(boma: &mut BattleObjectModuleAccessor, mut situatio
         if keep_float != *FIGHTER_STATUS_WORK_KEEP_FLAG_ALL_FLOAT {
             mask += VarModule::RESET_STATUS_FLOAT;
         }
-        VarModule::reset(object, mask);
+        VarModule::reset(boma.object(), mask);
     }
 
     original!()(boma, situation, kinetic_type, ground_correct_kind, cliff_check_kind, jostle, keep_flag, keep_int, keep_float, arg10)
@@ -85,12 +69,7 @@ unsafe fn change_status_request_from_script_hook(boma: &mut BattleObjectModuleAc
     let mut clear_buffer = arg3;
 
     if boma.is_fighter() {
-        if [
-            *FIGHTER_STATUS_KIND_PASSIVE_WALL,
-            *FIGHTER_STATUS_KIND_PASSIVE_WALL_JUMP,
-            *FIGHTER_STATUS_KIND_PASSIVE_CEIL,
-            *FIGHTER_STATUS_KIND_CATCH_ATTACK
-        ].contains(&next_status) {
+        if next_status == *FIGHTER_STATUS_KIND_CATCH_ATTACK {
             return 0;
         }
 

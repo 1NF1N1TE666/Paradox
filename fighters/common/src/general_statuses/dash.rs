@@ -4,11 +4,7 @@ use globals::*;
 
 pub fn wm_param_to_int(boma: *mut app::BattleObjectModuleAccessor, param_cat: u64, param: u64, what: i32) {
     unsafe {
-        WorkModule::set_int(
-            boma,
-            WorkModule::get_param_int(boma, param_cat, param),
-            what
-        );
+        WorkModule::set_int(boma, WorkModule::get_param_int(boma, param_cat, param), what);
     }
 }
 
@@ -135,7 +131,7 @@ unsafe fn status_DashCommon(fighter: &mut L2CFighterCommon) {
             *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_PASS,
             *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_APPEAL_U,
             *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_APPEAL_S,
-            *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_APPEAL_LW,
+            *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_APPEAL_LW
         ]);
     }
     VarModule::off_flag(fighter.battle_object, vars::common::instance::IS_SMASH_TURN);

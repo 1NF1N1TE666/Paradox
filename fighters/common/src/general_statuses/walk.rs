@@ -1,4 +1,3 @@
-// status imports
 use super::*;
 use globals::*;
 
@@ -10,15 +9,11 @@ macro_rules! interrupt {
 #[skyline::hook(replace = L2CFighterCommon_status_pre_Walk)]
 unsafe fn status_pre_walk(fighter: &mut L2CFighterCommon) -> L2CValue {
     let ground_brake = WorkModule::get_param_float(fighter.module_accessor, hash40("ground_brake"), 0);
-
 	let mut initial_speed = VarModule::get_float(fighter.battle_object, vars::common::instance::CURR_DASH_SPEED);
-
 	if ![*FIGHTER_STATUS_KIND_DASH].contains(&StatusModule::prev_status_kind(fighter.module_accessor, 0)) {
 		initial_speed = KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_ALL) - KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_GROUND) - KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_EXTERN);
 	}
-
 	VarModule::set_float(fighter.battle_object, vars::common::instance::CURR_DASH_SPEED, initial_speed);
-
     call_original!(fighter)
 }
 
@@ -36,7 +31,6 @@ unsafe fn status_walk_common(fighter: &mut L2CFighterCommon) {
     WorkModule::unable_transition_term_group_ex(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_TURN);
     WorkModule::unable_transition_term_group_ex(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_WALK);
     WorkModule::unable_transition_term(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_SLIP);
-
     VarModule::off_flag(fighter.battle_object, vars::common::instance::IS_SMASH_TURN);
 }
 
@@ -44,8 +38,7 @@ unsafe fn status_walk_common(fighter: &mut L2CFighterCommon) {
 unsafe extern "C" fn sub_walk_uniq_check(fighter: &mut L2CFighterCommon) -> L2CValue {
     if !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_STATUS_WALK_FLAG_SLIP) {
         WorkModule::unable_transition_term(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_SLIP);
-    }
-    else {
+    } else {
         WorkModule::enable_transition_term(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_SLIP);
         WorkModule::off_flag(fighter.module_accessor, *FIGHTER_STATUS_WALK_FLAG_SLIP);
     }
@@ -81,17 +74,13 @@ unsafe extern "C" fn status_walk_main_common(fighter: &mut L2CFighterCommon, arg
 	let stick_x = fighter.global_table[STICK_X].get_f32();
 	let prev_speed = VarModule::get_float(fighter.battle_object, vars::common::instance::CURR_DASH_SPEED);
 	let mut lr_modifier = 1.0;
-
     if fighter.kind() != *FIGHTER_KIND_PICKEL {
-
-        if [hash40("walk_slow_b"), hash40("walk_middle_b"), hash40("walk_fast_b")].contains(&MotionModule::motion_kind(fighter.module_accessor)) { // for auto-turn characters
+        if [hash40("walk_slow_b"), hash40("walk_middle_b"), hash40("walk_fast_b")].contains(&MotionModule::motion_kind(fighter.module_accessor)) {
             lr_modifier = -1.0;
         }
-
         fighter.clear_lua_stack();
         lua_args!(fighter, FIGHTER_KINETIC_ENERGY_ID_MOTION);
         let mut speed_motion = app::sv_kinetic_energy::get_speed_x(fighter.lua_state_agent);
-
         if prev_speed * PostureModule::lr(fighter.module_accessor) * lr_modifier < 0.0 {
             let applied_speed = (stick_x.signum() * ((walk_accel_mul + (walk_accel_add * stick_x.abs())))) + prev_speed;
             fighter.clear_lua_stack();
@@ -106,7 +95,6 @@ unsafe extern "C" fn status_walk_main_common(fighter: &mut L2CFighterCommon, arg
             lua_args!(fighter, FIGHTER_KINETIC_ENERGY_ID_CONTROL);
             app::sv_kinetic_energy::unable(fighter.lua_state_agent);
         }
-
         fighter.clear_lua_stack();
         lua_args!(fighter, FIGHTER_KINETIC_ENERGY_ID_CONTROL);
         let speed_control = app::sv_kinetic_energy::get_speed_x(fighter.lua_state_agent);
@@ -114,7 +102,6 @@ unsafe extern "C" fn status_walk_main_common(fighter: &mut L2CFighterCommon, arg
         lua_args!(fighter, FIGHTER_KINETIC_ENERGY_ID_MOTION);
         speed_motion = app::sv_kinetic_energy::get_speed_x(fighter.lua_state_agent);
     }
-
     call_original!(fighter, arg1, arg2, arg3, arg4)
 }
 

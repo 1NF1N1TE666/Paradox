@@ -79,7 +79,6 @@ impl DerefMut for FighterKineticEnergyMotion {
 }
 
 impl FighterKineticEnergyMotion {
-    /// Calls a MotionModule vtable function to update the trans move speed (2nd)
     pub fn update_trans_move_speed_2nd(boma: &mut BattleObjectModuleAccessor) {
         unsafe {
             let motion_module = *(boma as *const BattleObjectModuleAccessor as *const u64).add(0x88 / 0x8);
@@ -89,7 +88,6 @@ impl FighterKineticEnergyMotion {
         }
     }
 
-    /// Checks if the motion (2nd) is updating the kinetic energy
     pub fn is_motion_2nd_updating_energy(boma: &mut BattleObjectModuleAccessor) -> bool {
         unsafe {
             let motion_module = *(boma as *const BattleObjectModuleAccessor as *const u64).add(0x88 / 0x8);
@@ -99,7 +97,6 @@ impl FighterKineticEnergyMotion {
         }
     }
 
-    /// Checks if the motion is updating the kinetic energy
     pub fn is_main_motion_updating_energy(boma: &mut BattleObjectModuleAccessor) -> bool {
         unsafe {
             let motion_module = *(boma as *const BattleObjectModuleAccessor as *const u64).add(0x88 / 0x8);
@@ -133,11 +130,6 @@ impl FighterKineticEnergyMotion {
         }
     }
 
-    /// Sets some of the main behavioral values of the KineticEnergy and performs processing on it
-    /// # Arguments
-    /// * `accel` - The acceleration of the energy
-    /// * `max_speed` - The maximum speed of the energy
-    /// * `speed` - The speed that we are attempting to accelerate to
     pub fn set_values_and_process(&mut self, accel: PaddedVec2, max_speed: PaddedVec2, speed: PaddedVec2, boma: &mut BattleObjectModuleAccessor) {
         self.accel = accel;
         self.speed_max = max_speed;
@@ -146,12 +138,6 @@ impl FighterKineticEnergyMotion {
         self.prev_speed = speed;
     }
 
-    /// Gets the translation based on the specified energy reset type
-    /// # Arguments
-    /// * `boma` - The BattleObjectModuleAccessor
-    /// * `reset_type` - The reset type of the current energy
-    /// # Returns
-    /// The translation as a Vec2
     pub fn get_translation_by_reset_type(boma: &mut BattleObjectModuleAccessor, reset_type: EnergyMotionResetType) -> PaddedVec2 {
         let translation = unsafe {
             if reset_type.is_2nd() {
@@ -166,10 +152,6 @@ impl FighterKineticEnergyMotion {
         PaddedVec2::new(translation.z, translation.y)
     }
 
-    /// Checks if the animation is updating the kinetic energy, depending on the EnergyMotionResetType
-    /// # Arguments
-    /// * `boma` - The BattleObjectModuleAccessor
-    /// * `reset_type` - The reset type of the current energy
     pub fn is_motion_updating_energy(boma: &mut BattleObjectModuleAccessor, reset_type: EnergyMotionResetType) -> bool {
         if reset_type.is_2nd() {
             Self::is_motion_2nd_updating_energy(boma)
@@ -206,8 +188,6 @@ unsafe fn motion_update(energy: &mut FighterKineticEnergyMotion, boma: &mut Batt
 
         return;
     }
-
-    // Allows all grounded attacks to retain sliding momentum by default
 
     let mut is_stop_added = false;
 

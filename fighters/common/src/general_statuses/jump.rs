@@ -1,8 +1,5 @@
-// status imports
 use super::*;
 use globals::*;
-
-// This file contains code for wavelanding
 
 pub fn install() {
     skyline::nro::add_hook(nro_hook);

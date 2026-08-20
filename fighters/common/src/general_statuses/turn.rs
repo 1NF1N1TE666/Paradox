@@ -24,7 +24,6 @@ unsafe extern "C" fn status_pre_turncommon(fighter: &mut L2CFighterCommon) {
     WorkModule::unable_transition_term_group_ex(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_ESCAPE_F);
     WorkModule::unable_transition_term_group_ex(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_CONT_ESCAPE_B);
     WorkModule::on_flag(fighter.module_accessor, *FIGHTER_STATUS_WORK_ID_FLAG_RESERVE_TURN_ATTACK_S4_REV_PAD);
-
     let frame = if VarModule::is_flag(fighter.battle_object, vars::common::instance::IS_LATE_PIVOT) {
         5.0
     } else {
@@ -37,23 +36,17 @@ unsafe extern "C" fn status_pre_turncommon(fighter: &mut L2CFighterCommon) {
 unsafe extern "C" fn status_turn_main(fighter: &mut L2CFighterCommon) -> L2CValue {
     let should_end = if fighter.global_table[0x35].get_bool() {
         let custom_routine: *const extern "C" fn(&mut L2CFighterCommon) -> L2CValue = fighter.global_table[0x35].get_ptr() as _;
-        if !custom_routine.is_null() {
-            let callable: extern "C" fn(&mut L2CFighterCommon) -> L2CValue = std::mem::transmute(custom_routine);
-            callable(fighter).get_bool()
-        } else {
-            false
-        }
+        if !custom_routine.is_null() {let callable: extern "C" fn(&mut L2CFighterCommon) -> L2CValue = std::mem::transmute(custom_routine); callable(fighter).get_bool()} else {false}
     } else { false };
     if !should_end {
         let dash_stick_x: f32 = WorkModule::get_param_float(fighter.module_accessor, hash40("common"), hash40("dash_stick_x"));
         let stick_x = fighter.global_table[STICK_X].get_f32();
         let turn_work_lr: f32 = WorkModule::get_float(fighter.module_accessor, *FIGHTER_STATUS_TURN_WORK_FLOAT_LR);
-
         if fighter.global_table[SITUATION_KIND] == SITUATION_KIND_GROUND
         && stick_x * -1.0 * turn_work_lr < dash_stick_x
         && VarModule::is_flag(fighter.battle_object, vars::common::instance::IS_SMASH_TURN)
         && StatusModule::prev_status_kind(fighter.module_accessor, 0) == *FIGHTER_STATUS_KIND_DASH
-        && MotionModule::frame(fighter.module_accessor) == 1.0  // AND you are on frame 2 of your smash turn
+        && MotionModule::frame(fighter.module_accessor) == 1.0
         && VarModule::is_flag(fighter.battle_object, vars::common::instance::CAN_PERFECT_PIVOT) {
             VarModule::off_flag(fighter.battle_object, vars::common::instance::IS_SMASH_TURN);
             VarModule::off_flag(fighter.battle_object, vars::common::instance::CAN_PERFECT_PIVOT);
@@ -64,26 +57,19 @@ unsafe extern "C" fn status_turn_main(fighter: &mut L2CFighterCommon) -> L2CValu
             lua_args!(fighter, FIGHTER_KINETIC_ENERGY_ID_CONTROL, pivot_boost);
             app::sv_kinetic_energy::set_speed(fighter.lua_state_agent);
         }
-
         if !status_turncommon(fighter).get_bool() {
-            if fighter.global_table[SITUATION_KIND] == SITUATION_KIND_GROUND
-            && MotionModule::frame(fighter.module_accessor) >= 1.0 {
-                if (VarModule::is_flag(fighter.battle_object, vars::common::instance::IS_SMASH_TURN)
-                && MotionModule::frame(fighter.module_accessor) == 1.0 
-                && stick_x * -1.0 * turn_work_lr >= dash_stick_x)
-                || fighter.global_table[CMD_CAT1].get_i32() & *FIGHTER_PAD_CMD_CAT1_FLAG_DASH != 0
-                {
+            if fighter.global_table[SITUATION_KIND] == SITUATION_KIND_GROUND && MotionModule::frame(fighter.module_accessor) >= 1.0 {
+                if (
+                    VarModule::is_flag(fighter.battle_object, vars::common::instance::IS_SMASH_TURN)
+                    && MotionModule::frame(fighter.module_accessor) == 1.0 
+                    && stick_x * -1.0 * turn_work_lr >= dash_stick_x
+                ) || fighter.global_table[CMD_CAT1].get_i32() & *FIGHTER_PAD_CMD_CAT1_FLAG_DASH != 0 {
                     VarModule::off_flag(fighter.battle_object, vars::common::instance::IS_SMASH_TURN);
                     interrupt!(fighter, FIGHTER_STATUS_KIND_DASH, true);
                 }
-
                 let lr = WorkModule::get_float(fighter.module_accessor, *FIGHTER_SPECIAL_COMMAND_USER_INSTANCE_WORK_ID_FLOAT_OPPONENT_LR_1ON1);
                 if fighter.global_table[CMD_CAT1].get_i32() & *FIGHTER_PAD_CMD_CAT1_FLAG_TURN_DASH != 0 {
-                    let next_status = if [*FIGHTER_KIND_RYU, *FIGHTER_KIND_KEN, *FIGHTER_KIND_DOLLY, *FIGHTER_KIND_DEMON].contains(&fighter.kind()) && lr != 0.0 {
-                        FIGHTER_RYU_STATUS_KIND_DASH_BACK
-                    } else {
-                        FIGHTER_STATUS_KIND_TURN_DASH
-                    };
+                    let next_status = if [*FIGHTER_KIND_RYU, *FIGHTER_KIND_KEN, *FIGHTER_KIND_DOLLY, *FIGHTER_KIND_DEMON].contains(&fighter.kind()) && lr != 0.0 {FIGHTER_RYU_STATUS_KIND_DASH_BACK} else {FIGHTER_STATUS_KIND_TURN_DASH};
                     interrupt!(fighter, next_status, true);
                 }
             }

@@ -18,16 +18,10 @@ fn nro_hook(info: &skyline::nro::NroInfo) {
 
 #[skyline::hook(replace = L2CFighterCommon_status_pre_EscapeAir)]
 pub unsafe fn status_pre_EscapeAir(fighter: &mut L2CFighterCommon) -> L2CValue {
-    if fighter.global_table[PREV_STATUS_KIND] != FIGHTER_STATUS_KIND_DAMAGE_FALL 
-    && (VarModule::is_flag(fighter.battle_object, vars::common::instance::PERFECT_WAVEDASH) || fighter.handle_waveland(false)) {
+    if fighter.global_table[PREV_STATUS_KIND] != FIGHTER_STATUS_KIND_DAMAGE_FALL && (VarModule::is_flag(fighter.battle_object, vars::common::instance::PERFECT_WAVEDASH) || fighter.handle_waveland(false)) {
         VarModule::on_flag(fighter.battle_object, vars::common::status::SHOULD_WAVELAND);
         GroundModule::attach_ground(fighter.module_accessor, true);
-        let status = if fighter.global_table[FIGHTER_KIND] == FIGHTER_KIND_KOOPAJR
-        && WorkModule::is_flag(fighter.module_accessor, *FIGHTER_KOOPAJR_INSTANCE_WORK_ID_FLAG_SPECIAL_HI_INTERRUPT) {
-            FIGHTER_KOOPAJR_STATUS_KIND_SPECIAL_HI_LANDING
-        } else {
-            FIGHTER_STATUS_KIND_LANDING
-        };
+        let status = if fighter.global_table[FIGHTER_KIND] == FIGHTER_KIND_KOOPAJR && WorkModule::is_flag(fighter.module_accessor, *FIGHTER_KOOPAJR_INSTANCE_WORK_ID_FLAG_SPECIAL_HI_INTERRUPT) {FIGHTER_KOOPAJR_STATUS_KIND_SPECIAL_HI_LANDING} else {FIGHTER_STATUS_KIND_LANDING};
         fighter.change_status(status.into(), false.into());
         return 0.into();
     }
@@ -88,6 +82,5 @@ pub unsafe fn status_end_EscapeAir(fighter: &mut L2CFighterCommon) -> L2CValue {
     VarModule::off_flag(fighter.battle_object, vars::common::status::SHOULD_WAVELAND);
     VarModule::off_flag(fighter.battle_object, vars::common::instance::PERFECT_WAVEDASH);
     VarModule::on_flag(fighter.battle_object, vars::common::instance::ENABLE_AIR_ESCAPE_MAGNET);
-    
     call_original!(fighter)
 }

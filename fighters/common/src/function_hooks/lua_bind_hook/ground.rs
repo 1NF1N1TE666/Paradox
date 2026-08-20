@@ -16,12 +16,13 @@ pub unsafe fn init_settings_edges(boma: &mut BattleObjectModuleAccessor, situati
 
     if boma.is_fighter()
     && boma.is_situation(*SITUATION_KIND_GROUND) {
-
         if status_kind == *FIGHTER_STATUS_KIND_APPEAL {
             fix = *GROUND_CORRECT_KIND_GROUND as u32;
         }
 
-        if [*FIGHTER_STATUS_KIND_WAIT,
+        if [
+            *FIGHTER_STATUS_KIND_WAIT,
+            *FIGHTER_STATUS_KIND_WALK,
             *FIGHTER_STATUS_KIND_DASH,
             *FIGHTER_STATUS_KIND_TURN,
             *FIGHTER_STATUS_KIND_TURN_DASH,
@@ -33,25 +34,19 @@ pub unsafe fn init_settings_edges(boma: &mut BattleObjectModuleAccessor, situati
             *FIGHTER_STATUS_KIND_LANDING,
             *FIGHTER_STATUS_KIND_LANDING_LIGHT,
             *FIGHTER_STATUS_KIND_LANDING_ATTACK_AIR,
-            *FIGHTER_STATUS_KIND_LANDING_FALL_SPECIAL,
-            *FIGHTER_STATUS_KIND_LANDING_DAMAGE_LIGHT,
-            *FIGHTER_STATUS_KIND_GUARD_DAMAGE,
-            *FIGHTER_STATUS_KIND_ITEM_HEAVY_PICKUP,
-            *FIGHTER_STATUS_KIND_DAMAGE,
             *FIGHTER_STATUS_KIND_AIR_LASSO_LANDING,
-            *FIGHTER_STATUS_KIND_TREAD_DAMAGE,
-            *FIGHTER_STATUS_KIND_TREAD_DAMAGE_RV,
-            *FIGHTER_STATUS_KIND_LANDING_DAMAGE_LIGHT,
+            *FIGHTER_STATUS_KIND_LANDING_FALL_SPECIAL,
+            *FIGHTER_STATUS_KIND_DAMAGE,
             *FIGHTER_STATUS_KIND_DAMAGE_SONG,
             *FIGHTER_STATUS_KIND_DAMAGE_SLEEP_START,
             *FIGHTER_STATUS_KIND_DAMAGE_SLEEP,
             *FIGHTER_STATUS_KIND_DAMAGE_SLEEP_END,
+            *FIGHTER_STATUS_KIND_LANDING_DAMAGE_LIGHT,
             *FIGHTER_STATUS_KIND_DOWN_DAMAGE,
-            *FIGHTER_STATUS_KIND_SAVING_DAMAGE].contains(&status_kind) {
-            fix = *GROUND_CORRECT_KIND_GROUND as u32;
-        }
-
-        if (boma.kind() == *FIGHTER_KIND_FALCO && boma.is_status(*FIGHTER_FALCO_STATUS_KIND_SPECIAL_S_FALL_LANDING)) {
+            *FIGHTER_STATUS_KIND_SAVING_DAMAGE,
+            *FIGHTER_STATUS_KIND_TREAD_DAMAGE,
+            *FIGHTER_STATUS_KIND_TREAD_DAMAGE_RV
+        ].contains(&status_kind) {
             fix = *GROUND_CORRECT_KIND_GROUND as u32;
         }
     }
@@ -71,22 +66,31 @@ unsafe fn correct_hook(boma: &mut BattleObjectModuleAccessor, kind: GroundCorrec
 
     let status_kind = StatusModule::status_kind(boma);
     if [
-        *FIGHTER_STATUS_KIND_LANDING,
-        *FIGHTER_STATUS_KIND_TURN_DASH,
+        *FIGHTER_STATUS_KIND_WAIT,
+        *FIGHTER_STATUS_KIND_WALK,
         *FIGHTER_STATUS_KIND_DASH,
+        *FIGHTER_STATUS_KIND_TURN_DASH,
+        *FIGHTER_STATUS_KIND_SQUAT,
+        *FIGHTER_STATUS_KIND_SQUAT_WAIT,
+        *FIGHTER_STATUS_KIND_SQUAT_F,
+        *FIGHTER_STATUS_KIND_SQUAT_B,
+        *FIGHTER_STATUS_KIND_SQUAT_RV,
+        *FIGHTER_STATUS_KIND_LANDING,
+        *FIGHTER_STATUS_KIND_LANDING_LIGHT,
+        *FIGHTER_STATUS_KIND_LANDING_ATTACK_AIR,
+        *FIGHTER_STATUS_KIND_AIR_LASSO_LANDING,
         *FIGHTER_STATUS_KIND_LANDING_FALL_SPECIAL,
         *FIGHTER_STATUS_KIND_DAMAGE,
-        *FIGHTER_STATUS_KIND_TREAD_DAMAGE,
-        *FIGHTER_STATUS_KIND_TREAD_DAMAGE_RV,
-        *FIGHTER_STATUS_KIND_LANDING_DAMAGE_LIGHT,
-        *FIGHTER_STATUS_KIND_DAMAGE_SONG,
         *FIGHTER_STATUS_KIND_DAMAGE_SLEEP_START,
         *FIGHTER_STATUS_KIND_DAMAGE_SLEEP,
         *FIGHTER_STATUS_KIND_DAMAGE_SLEEP_END,
+        *FIGHTER_STATUS_KIND_DAMAGE_SONG,
+        *FIGHTER_STATUS_KIND_LANDING_DAMAGE_LIGHT,
         *FIGHTER_STATUS_KIND_DOWN_DAMAGE,
-        *FIGHTER_STATUS_KIND_SAVING_DAMAGE
-    ].contains(&status_kind)
-    || check_fighter_edge_slipoffs(boma).get_bool() {
+        *FIGHTER_STATUS_KIND_SAVING_DAMAGE,
+        *FIGHTER_STATUS_KIND_TREAD_DAMAGE,
+        *FIGHTER_STATUS_KIND_TREAD_DAMAGE_RV
+    ].contains(&status_kind) || check_fighter_edge_slipoffs(boma).get_bool() {
         return original!()(boma, GroundCorrectKind(*GROUND_CORRECT_KIND_GROUND));
     }
 

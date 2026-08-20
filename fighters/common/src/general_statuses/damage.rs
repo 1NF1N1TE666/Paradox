@@ -29,7 +29,6 @@ pub unsafe fn FighterStatusUniqProcessDamage_leave_stop_hook(fighter: &mut L2CFi
     if !arg3.get_bool() {
         return 0.into();
     }
-
     let control_module = *(fighter.module_accessor as *const u64).offset(0x48 / 8) as *const u64;
     let vtable = *control_module;
     let control_module__update: extern "C" fn(*const u64, bool) = std::mem::transmute(*(((vtable as u64) + 0x148) as *const u64));
@@ -46,9 +45,7 @@ pub unsafe fn FighterStatusUniqProcessDamage_leave_stop_hook(fighter: &mut L2CFi
         GroundModule::set_correct(fighter.module_accessor, GroundCorrectKind(*GROUND_CORRECT_KIND_AIR));
         WorkModule::on_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_DAMAGE_FLY_AIR);
     }
-
     WorkModule::set_int(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_STOP_RELEASE_ACTION_NONE, *FIGHTER_STATUS_DAMAGE_WORK_INT_STOP_RELEASE_ACTION);
-
     let mut damage_motion_kind = WorkModule::get_int64(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_WORK_INT_MOTION_KIND);
     let mut start_frame = 0.0;
     if damage_motion_kind == hash40("damage_fly_roll") {
@@ -131,88 +128,54 @@ pub unsafe fn FighterStatusUniqProcessDamage_leave_stop_hook(fighter: &mut L2CFi
         }
         WorkModule::set_int64(fighter.module_accessor, hash40("invalid") as i64, *FIGHTER_STATUS_DAMAGE_WORK_INT_MOTION_KIND);
     }
-
     check_asdi(fighter);
-
     WorkModule::on_flag(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_FLAG_ENABLE_DOWN);
-
     if fighter.is_status_one_of(&[*FIGHTER_STATUS_KIND_DAMAGE_FLY, *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR])
     && !WorkModule::is_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_TO_PIERCE) {
         MotionModule::set_rate(fighter.module_accessor, 1.0);
         WorkModule::set_float(fighter.module_accessor, 1.0, *FIGHTER_STATUS_DAMAGE_WORK_FLOAT_DAMAGE_MOTION_RATE);
     }
-    
     0.into()
 }
 
 unsafe extern "C" fn check_asdi(fighter: &mut L2CFighterCommon) {
-        let hashmap = fighter.local_func__fighter_status_damage_2();
-        let sdi_mul = hashmap["stop_delay_"].get_f32();
-
-        let stick_x = if ControlModule::check_button_on(fighter.module_accessor, *CONTROL_PAD_BUTTON_CSTICK_ON) && !fighter.is_button_on(Buttons::CStickOverride) {
-            ControlModule::get_sub_stick_x(fighter.module_accessor)
-        }
-        else {
-            ControlModule::get_stick_x(fighter.module_accessor)
-        };
-        let stick_y = if ControlModule::check_button_on(fighter.module_accessor, *CONTROL_PAD_BUTTON_CSTICK_ON) && !fighter.is_button_on(Buttons::CStickOverride) {
-            ControlModule::get_sub_stick_y(fighter.module_accessor)
-        }
-        else {
-            ControlModule::get_stick_y(fighter.module_accessor)
-        };
-
-        let vector = fighter.Vector2__create(stick_x.into(), stick_y.into());
-        let length = fighter.Vector2__length(vector.clone());
-        let asdi_stick = 0.8;
-        if length.get_f32() < asdi_stick {
-            return;
-        }
-
-        let base_asdi = WorkModule::get_param_float(fighter.module_accessor, hash40("common"), hash40("hit_stop_delay_auto_mul"));
-        let asdi_speed_up_mul = if fighter.is_flag(*FIGHTER_INSTANCE_WORK_ID_FLAG_DAMAGE_SPEED_UP) {
-            fighter.get_float(*FIGHTER_INSTANCE_WORK_ID_FLOAT_DAMAGE_SPEED_UP_MAX_MAG)
-        } else {
-            1.0
-        };
-
-        let asdi = sdi_mul * base_asdi * asdi_speed_up_mul;
-
-        let asdi_x = asdi * stick_x;
-        let asdi_y = asdi * stick_y;
-
-        let mut pos = Vector3f {
-            x: PostureModule::pos_x(fighter.module_accessor),
-            y: PostureModule::pos_y(fighter.module_accessor),
-            z: PostureModule::pos_z(fighter.module_accessor)
-        };
-
-        pos.x += asdi_x;
-        pos.y += asdi_y;
-        PostureModule::set_pos(fighter.module_accessor, &Vector3f{x: pos.x, y: pos.y, z: pos.z});
+    let hashmap = fighter.local_func__fighter_status_damage_2();
+    let sdi_mul = hashmap["stop_delay_"].get_f32();
+    let stick_x = if ControlModule::check_button_on(fighter.module_accessor, *CONTROL_PAD_BUTTON_CSTICK_ON) && !fighter.is_button_on(Buttons::CStickOverride) {ControlModule::get_sub_stick_x(fighter.module_accessor)} else {ControlModule::get_stick_x(fighter.module_accessor)};
+    let stick_y = if ControlModule::check_button_on(fighter.module_accessor, *CONTROL_PAD_BUTTON_CSTICK_ON) && !fighter.is_button_on(Buttons::CStickOverride) {ControlModule::get_sub_stick_y(fighter.module_accessor)} else {ControlModule::get_stick_y(fighter.module_accessor)};
+    let vector = fighter.Vector2__create(stick_x.into(), stick_y.into());
+    let length = fighter.Vector2__length(vector.clone());
+    let asdi_stick = 0.8;
+    if length.get_f32() < asdi_stick {
+        return;
+    }
+    let base_asdi = WorkModule::get_param_float(fighter.module_accessor, hash40("common"), hash40("hit_stop_delay_auto_mul"));
+    let asdi_speed_up_mul = if fighter.is_flag(*FIGHTER_INSTANCE_WORK_ID_FLAG_DAMAGE_SPEED_UP) {fighter.get_float(*FIGHTER_INSTANCE_WORK_ID_FLOAT_DAMAGE_SPEED_UP_MAX_MAG)} else {1.0};
+    let asdi = sdi_mul * base_asdi * asdi_speed_up_mul;
+    let asdi_x = asdi * stick_x;
+    let asdi_y = asdi * stick_y;
+    let mut pos = Vector3f {x: PostureModule::pos_x(fighter.module_accessor), y: PostureModule::pos_y(fighter.module_accessor), z: PostureModule::pos_z(fighter.module_accessor)};
+    pos.x += asdi_x;
+    pos.y += asdi_y;
+    PostureModule::set_pos(fighter.module_accessor, &Vector3f{x: pos.x, y: pos.y, z: pos.z});
 }
 
 #[skyline::hook(replace = L2CFighterCommon_ftStatusUniqProcessDamage_init_common)]
 unsafe fn ftstatusuniqprocessdamage_init_common(fighter: &mut L2CFighterCommon) {
     let reaction_frame = WorkModule::get_float(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_WORK_FLOAT_REACTION_FRAME);
-
     fighter.clear_lua_stack();
     lua_args!(fighter, hash40("speed_vec_x") as u64);
     sv_information::damage_log_value(fighter.lua_state_agent);
     let damage_speed_x = fighter.pop_lua_stack(1).get_f32();
-
     fighter.clear_lua_stack();
     lua_args!(fighter, hash40("speed_vec_y") as u64);
     sv_information::damage_log_value(fighter.lua_state_agent);
     let damage_speed_y = fighter.pop_lua_stack(1).get_f32();
-
     fighter.clear_lua_stack();
     lua_args!(fighter, hash40("attr"));
     sv_information::damage_log_value(fighter.lua_state_agent);
     let attr = fighter.pop_lua_stack(1).get_u64();
-
     let _status = StatusModule::status_kind(fighter.module_accessor);
-
     if !(0 < reaction_frame as i32) {
         WorkModule::on_flag(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_FLAG_END_REACTION);
         WorkModule::off_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_DAMAGE_SPEED_UP);
@@ -222,41 +185,33 @@ unsafe fn ftstatusuniqprocessdamage_init_common(fighter: &mut L2CFighterCommon) 
         WorkModule::off_flag(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_FLAG_END_REACTION);
         WorkModule::set_float(fighter.module_accessor, reaction_frame, *FIGHTER_INSTANCE_WORK_ID_FLOAT_DAMAGE_REACTION_FRAME);
         WorkModule::set_float(fighter.module_accessor, reaction_frame, *FIGHTER_INSTANCE_WORK_ID_FLOAT_DAMAGE_REACTION_FRAME_LAST);
-
         if fighter.global_table[SITUATION_KIND].get_i32() != *SITUATION_KIND_AIR {
             WorkModule::off_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_DAMAGE_FLY_AIR);
         } else {
             WorkModule::on_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_DAMAGE_FLY_AIR);
         }
     }
-
     fighter.clear_lua_stack();
     lua_args!(fighter, hash40("angle"));
     sv_information::damage_log_value(fighter.lua_state_agent);
     let angle = fighter.pop_lua_stack(1).get_f32();
-
     let degrees = angle.to_degrees();
-    
     let damage_cliff_no_catch_frame = WorkModule::get_param_int(fighter.module_accessor, hash40("common"), hash40("damage_cliff_no_catch_frame"));
     WorkModule::set_int(fighter.module_accessor, damage_cliff_no_catch_frame, *FIGHTER_INSTANCE_WORK_ID_INT_CLIFF_NO_CATCH_FRAME);
-    
     let cursor_fly_speed = WorkModule::get_param_float(fighter.module_accessor, hash40("common"), hash40("cursor_fly_speed"));
     let pop1squared = damage_speed_x * damage_speed_x;
     let pop2squared = damage_speed_y * damage_speed_y;
     let combined = pop1squared + pop2squared;
     let cursor_fly_speed_squared = cursor_fly_speed * cursor_fly_speed;
-
     if cursor_fly_speed_squared < combined {
         WorkModule::on_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_CURSOR);
         let cursor_fly_frame = WorkModule::get_param_int(fighter.module_accessor, hash40("common"), hash40("cursor_fly_frame"));
         WorkModule::set_int(fighter.module_accessor, cursor_fly_frame, *FIGHTER_INSTANCE_WORK_ID_INT_CURSOR_FRAME);
     }
-
     let damage_fly_attack_frame = WorkModule::get_param_int(fighter.module_accessor, hash40("common"), hash40("damage_fly_attack_frame"));
     WorkModule::set_int(fighter.module_accessor, damage_fly_attack_frame, *FIGHTER_STATUS_DAMAGE_WORK_INT_ATTACK_DISABLE_FRAME);
     let damage_fly_escape_frame = WorkModule::get_param_int(fighter.module_accessor, hash40("common"), hash40("damage_fly_escape_frame"));
     WorkModule::set_int(fighter.module_accessor, damage_fly_escape_frame, *FIGHTER_STATUS_DAMAGE_WORK_INT_ESCAPE_DISABLE_FRAME);
-
     if [
         hash40("collision_attr_paralyze"),
         hash40("collision_attr_paralyze_ghost")
@@ -264,7 +219,6 @@ unsafe fn ftstatusuniqprocessdamage_init_common(fighter: &mut L2CFighterCommon) 
         let invalid_paralyze_frame = WorkModule::get_param_float(fighter.module_accessor, hash40("common"), hash40("invalid_paralyze_frame"));
         WorkModule::set_float(fighter.module_accessor, invalid_paralyze_frame, *FIGHTER_INSTANCE_WORK_ID_INT_INVALID_PARALYZE_FRAME);
     }
-
     if FighterStopModuleImpl::is_damage_stop(fighter.module_accessor) {
         ControlModule::reset_trigger(fighter.module_accessor);
     }
@@ -281,7 +235,6 @@ unsafe fn sub_ftStatusUniqProcessDamageFly_getMotionKind_hook(fighter: &mut L2CF
     if angle > fly_top_angle_lw && angle < fly_top_angle_hi {
         return L2CValue::U64(hash40("damage_fly_top"));
     }
-
     let damage_lr = WorkModule::get_float(fighter.module_accessor, *FIGHTER_STATUS_WORK_ID_FLOAT_RESERVE_DAMAGE_LR);
     let lr = PostureModule::lr(fighter.module_accessor);
     fighter.clear_lua_stack();
@@ -291,7 +244,6 @@ unsafe fn sub_ftStatusUniqProcessDamageFly_getMotionKind_hook(fighter: &mut L2CF
     if back_damage || lr * damage_lr < 0.0 {
         return L2CValue::U64(hash40("wall_damage"));
     }
-    
     fighter.clear_lua_stack();
     lua_args!(fighter, hash40("height"));
     sv_information::damage_log_value(fighter.lua_state_agent);
@@ -320,8 +272,7 @@ unsafe fn status_DamageFly_Main_hook(fighter: &mut L2CFighterCommon) -> L2CValue
             MotionModule::set_rate(fighter.module_accessor, 0.0);
         }
         if WorkModule::is_enable_transition_term(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_DAMAGE_FALL) 
-        && WorkModule::is_flag(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_FLAG_END_REACTION)
-        {
+        && WorkModule::is_flag(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_FLAG_END_REACTION) {
             fighter.change_status(FIGHTER_STATUS_KIND_DAMAGE_FALL.into(), false.into());
             return 0.into();
         }
@@ -331,8 +282,7 @@ unsafe fn status_DamageFly_Main_hook(fighter: &mut L2CFighterCommon) -> L2CValue
         if !FighterStopModuleImpl::is_damage_stop(fighter.module_accessor) {
             if fighter.sub_AirChkDamageReflectWall().get_bool()
             || fighter.sub_AirChkDamageReflectCeil().get_bool()
-            || fighter.sub_AirChkDamageReflectFloor().get_bool()
-            {
+            || fighter.sub_AirChkDamageReflectFloor().get_bool() {
                 return 0.into();
             }
         }
@@ -349,7 +299,10 @@ unsafe fn status_DamageFly_Main_hook(fighter: &mut L2CFighterCommon) -> L2CValue
 
 #[skyline::hook(replace = L2CFighterCommon_calc_damage_motion_rate)]
 unsafe fn calc_damage_motion_rate_hook(fighter: &mut L2CFighterCommon, motion_kind: L2CValue, start_frame: L2CValue, is_pierce: L2CValue) -> L2CValue {
-    if fighter.is_status_one_of(&[*FIGHTER_STATUS_KIND_DAMAGE_FLY, *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR]) && !is_pierce.get_bool() {
+    if fighter.is_status_one_of(&[
+        *FIGHTER_STATUS_KIND_DAMAGE_FLY, 
+        *FIGHTER_STATUS_KIND_DAMAGE_FLY_METEOR
+    ]) && !is_pierce.get_bool() {
         WorkModule::set_float(fighter.module_accessor, 2.0, *FIGHTER_STATUS_DAMAGE_WORK_FLOAT_DAMAGE_MOTION_RATE);
         return L2CValue::F32(2.0);
     }
@@ -360,8 +313,7 @@ unsafe fn calc_damage_motion_rate_hook(fighter: &mut L2CFighterCommon, motion_ki
 unsafe fn sub_DamageFlyCommon_hook(fighter: &mut L2CFighterCommon) -> L2CValue {
     if fighter.sub_AirChkPassiveWallJump().get_bool()
     || fighter.sub_AirChkPassiveWall().get_bool()
-    || fighter.sub_AirChkPassiveCeil().get_bool()
-    {
+    || fighter.sub_AirChkPassiveCeil().get_bool() {
         return true.into();
     }
     if WorkModule::is_flag(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_FLAG_END_REACTION) {
@@ -372,8 +324,7 @@ unsafe fn sub_DamageFlyCommon_hook(fighter: &mut L2CFighterCommon) -> L2CValue {
         || fighter.sub_transition_group_check_air_attack().get_bool()
         || fighter.sub_transition_group_check_air_tread_jump().get_bool()
         || fighter.sub_transition_group_check_air_wall_jump().get_bool()
-        || fighter.sub_transition_group_check_air_jump_aerial().get_bool()
-        {
+        || fighter.sub_transition_group_check_air_jump_aerial().get_bool() {
             return true.into();
         } else {
             if !fighter.global_table[IS_STOPPING].get_bool()
@@ -384,8 +335,7 @@ unsafe fn sub_DamageFlyCommon_hook(fighter: &mut L2CFighterCommon) -> L2CValue {
             return false.into();
         }
     } else {
-        if !fighter.global_table[IS_STOPPING].get_bool()
-        {
+        if !fighter.global_table[IS_STOPPING].get_bool() {
             if fighter.sub_DamageFlyChkUniq().get_bool() {
                 return true.into();
             }
@@ -442,11 +392,8 @@ pub unsafe fn exec_damage_elec_hit_stop_hook(fighter: &mut L2CFighterCommon) {
             GroundModule::set_correct(fighter.module_accessor, GroundCorrectKind(*GROUND_CORRECT_KIND_AIR));
             WorkModule::on_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_DAMAGE_FLY_AIR);
         }
-
         WorkModule::set_int(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_STOP_RELEASE_ACTION_NONE, *FIGHTER_STATUS_DAMAGE_WORK_INT_STOP_RELEASE_ACTION);
-
         fighter.virtual_ftStatusUniqProcessDamage_init(L2CValue::Bool(true));
-
         fighter.clear_lua_stack();
         lua_args!(fighter, Hash40::new_raw(0x244371e88f));
         smash::app::sv_battle_object::notify_event_msc_cmd(fighter.lua_state_agent);
@@ -474,9 +421,7 @@ pub unsafe fn exec_damage_elec_hit_stop_hook(fighter: &mut L2CFighterCommon) {
             WorkModule::off_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_DAMAGE_PARALYZE_EFFECT);
         }
         WorkModule::off_flag(fighter.module_accessor, *FIGHTER_INSTANCE_WORK_ID_FLAG_PARALYZE_STOP);
-
         check_asdi(fighter);
-
         WorkModule::on_flag(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_FLAG_ENABLE_DOWN);
     }
 }
@@ -484,30 +429,18 @@ pub unsafe fn exec_damage_elec_hit_stop_hook(fighter: &mut L2CFighterCommon) {
 #[skyline::hook(replace = smash::lua2cpp::L2CFighterCommon_FighterStatusDamage__is_enable_damage_fly_effect)]
 pub unsafe fn FighterStatusDamage__is_enable_damage_fly_effect_hook(fighter: &mut L2CFighterCommon, arg2: L2CValue, arg3: L2CValue, arg4: L2CValue, arg5: L2CValue) -> L2CValue {
     let ret = call_original!(fighter, arg2, arg3, arg4, arg5);
-
-    let speed = sv_math::vec2_length(
-        KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN)
-            + KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_DAMAGE),
-
-        KineticModule::get_sum_speed_y(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN)
-            + KineticModule::get_sum_speed_y(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_DAMAGE)
-    );
-
+    let speed = sv_math::vec2_length(KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN) + KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_DAMAGE), KineticModule::get_sum_speed_y(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN) + KineticModule::get_sum_speed_y(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_DAMAGE));
     let fly_effect_smoke_speed = WorkModule::get_param_float(fighter.module_accessor, hash40("common"), hash40("fly_effect_smoke_speed"));
-
     if ret.get_bool() {
         if WorkModule::get_int(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_WORK_INT_FRAME) < 3 {
-            if speed > 0.0
-            && speed < fly_effect_smoke_speed + 1.0 {
+            if speed > 0.0 && speed < fly_effect_smoke_speed + 1.0 {
                 WorkModule::on_flag(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_FLAG_NO_SMOKE);
             }
-
             return L2CValue::Bool(false);
         } else if speed < fly_effect_smoke_speed {
             return L2CValue::Bool(false);
         }
     }
-
     ret
 }
 
@@ -517,24 +450,17 @@ pub unsafe fn sub_update_damage_fly_effect(fighter: &mut L2CFighterCommon, arg2:
     let mut new_generate_smoke = generate_smoke.clone();
     let hitlag_frames_remaining = FighterStopModuleImpl::get_damage_stop_frame(fighter.module_accessor);
     let fly_frame = WorkModule::get_int(fighter.module_accessor, *FIGHTER_STATUS_DAMAGE_WORK_INT_FRAME);
-
-    if arg4.clone().get_u64() == 0x1154cb72bf
-    && generate_smoke.get_bool() {
-        if hitlag_frames_remaining != 0
-        || (fly_frame > 3
-            && fly_frame % 2 == 1)
-        {
+    if arg4.clone().get_u64() == 0x1154cb72bf && generate_smoke.get_bool() {
+        if hitlag_frames_remaining != 0 || (fly_frame > 3 && fly_frame % 2 == 1) {
             new_generate_smoke = L2CValue::Bool(false);
         }
     }
     let handle = call_original!(fighter, new_generate_smoke.clone(), arg3.clone(), arg4.clone(), arg5.clone(), arg6.clone(), arg7.clone(), arg8.clone());
-
     if arg4.get_u64() == 0x1154cb72bf
     && generate_smoke.get_bool()
     && hitlag_frames_remaining == 0
     && !new_generate_smoke.get_bool() {
         return call_original!(fighter, generate_smoke, arg3, arg4, arg5, arg6, arg7, arg8);
     }
-
     handle
 }

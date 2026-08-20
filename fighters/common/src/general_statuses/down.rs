@@ -1,8 +1,6 @@
 use super::*;
 use globals::*;
 
-// This file contains code related to knockdown states
-
 pub fn install() {
     skyline::nro::add_hook(nro_hook);
 }
@@ -19,7 +17,6 @@ fn nro_hook(info: &skyline::nro::NroInfo) {
     }
 }
 
-// This runs as you enter knockdown
 #[skyline::hook(replace = smash::lua2cpp::L2CFighterCommon_status_pre_Down)]
 unsafe fn status_pre_Down(fighter: &mut L2CFighterCommon) -> L2CValue {
     StatusModule::init_settings(
@@ -39,7 +36,7 @@ unsafe fn status_pre_Down(fighter: &mut L2CFighterCommon) -> L2CValue {
         true,
         *FIGHTER_TREADED_KIND_DISABLE,
         false,
-        false, // false = can be grabbed
+        false,
         false,
         0,
         *FIGHTER_STATUS_ATTR_SLOPE_TOP_UNLIMIT as u32,
@@ -75,13 +72,11 @@ unsafe fn status_DownStand_Main(fighter: &mut L2CFighterCommon) -> L2CValue {
             MotionModule::set_rate(fighter.module_accessor, motion_rate);
             MotionModule::set_whole_rate(fighter.module_accessor, 1.0);
         }
-        
         let xlu_end_frame = FighterMotionModuleImpl::get_hit_normal_frame(fighter.module_accessor, Hash40::new_raw(motion_kind), true);
         if fighter.global_table[CURRENT_FRAME].get_f32() == xlu_end_frame {
             HitModule::set_whole(fighter.module_accessor, HitStatus(*HIT_STATUS_NORMAL), 0);
         }
     }
-
     call_original!(fighter)
 }
 
@@ -99,13 +94,11 @@ unsafe fn status_DownStandFb_Main(fighter: &mut L2CFighterCommon) -> L2CValue {
             MotionModule::set_rate(fighter.module_accessor, motion_rate);
             MotionModule::set_whole_rate(fighter.module_accessor, 1.0);
         }
-        
         let xlu_end_frame = FighterMotionModuleImpl::get_hit_normal_frame(fighter.module_accessor, Hash40::new_raw(motion_kind), true);
         if fighter.global_table[CURRENT_FRAME].get_f32() == xlu_end_frame {
             HitModule::set_whole(fighter.module_accessor, HitStatus(*HIT_STATUS_NORMAL), 0);
         }
     }
-
     call_original!(fighter)
 }
 
@@ -123,12 +116,10 @@ unsafe fn status_DownStandAttack_Main(fighter: &mut L2CFighterCommon) -> L2CValu
             MotionModule::set_rate(fighter.module_accessor, motion_rate);
             MotionModule::set_whole_rate(fighter.module_accessor, 1.0);
         }
-        
         let xlu_end_frame = FighterMotionModuleImpl::get_hit_normal_frame(fighter.module_accessor, Hash40::new_raw(motion_kind), true);
         if fighter.global_table[CURRENT_FRAME].get_f32() == xlu_end_frame {
             HitModule::set_whole(fighter.module_accessor, HitStatus(*HIT_STATUS_NORMAL), 0);
         }
     }
-
     call_original!(fighter)
 }

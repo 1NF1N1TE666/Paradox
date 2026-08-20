@@ -12,15 +12,12 @@ mod dash;
 mod jumpsquat;
 pub mod jump;
 mod run;
-mod attack;
 mod turn;
 mod walk;
 mod pass;
-mod crawl;
 mod cliff;
 mod damage;
 mod down;
-mod itemthrow;
 mod glide;
 mod fly;
 
@@ -505,15 +502,12 @@ pub fn install() {
     jumpsquat::install();
     jump::install();
     run::install();
-    attack::install();
     turn::install();
     walk::install();
     pass::install();
-    crawl::install();
     cliff::install();
     damage::install();
     down::install();
-    itemthrow::install();
     glide::install();
     fly::install();
 

@@ -3,14 +3,12 @@ use super::*;
 unsafe extern "C" fn game_specialnstart(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     let boma = agent.boma();
-    FT_MOTION_RATE(agent, 0.5);
+    FT_MOTION_RATE(agent, 0.25);
     frame(lua_state, 4.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
         ArticleModule::generate_article(boma, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER, false, -1);
-    }
-    if IS_EXIST_ARTICLE(agent, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER) {
-        if is_excute(agent) {
+        if IS_EXIST_ARTICLE(agent, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER) {
             ArticleModule::change_motion(boma, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER, Hash40::new("open"), false, -1.0);
         }
     }
@@ -19,14 +17,12 @@ unsafe extern "C" fn game_specialnstart(agent: &mut L2CAgentBase) {
 unsafe extern "C" fn game_specialairnstart(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     let boma = agent.boma();
-    FT_MOTION_RATE(agent, 0.5);
+    FT_MOTION_RATE(agent, 0.25);
     frame(lua_state, 4.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
         ArticleModule::generate_article(boma, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER, false, -1);
-    }
-    if IS_EXIST_ARTICLE(agent, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER) {
-        if is_excute(agent) {
+        if IS_EXIST_ARTICLE(agent, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER) {
             ArticleModule::change_motion(boma, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER, Hash40::new("open"), false, -1.0);
         }
     }
@@ -45,12 +41,11 @@ unsafe extern "C" fn game_specialnloop(agent: &mut L2CAgentBase) {
             ArticleModule::change_motion(boma, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER, Hash40::new("loop"), false, -1.0);
         }
     }
-    FT_MOTION_RATE(agent, 1.08);
-    wait(lua_state, 13.0);
-    FT_MOTION_RATE(agent, 1.0);
+    wait(lua_state, 12.0);
     if is_excute(agent) {
         WorkModule::off_flag(boma, *FIGHTER_FALCO_BLASTER_STATUS_WORK_ID_FLAG_LOOP_ACCEPT);
     }
+    FT_MOTION_RATE(agent, 2.32);
 }
 
 unsafe extern "C" fn game_specialairnloop(agent: &mut L2CAgentBase) {
@@ -66,18 +61,17 @@ unsafe extern "C" fn game_specialairnloop(agent: &mut L2CAgentBase) {
             ArticleModule::change_motion(boma, *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER, Hash40::new("loop"), false, -1.0);
         }
     }
-    FT_MOTION_RATE(agent, 1.08);
-    wait(lua_state, 13.0);
-    FT_MOTION_RATE(agent, 1.0);
+    wait(lua_state, 12.0);
     if is_excute(agent) {
         WorkModule::off_flag(boma, *FIGHTER_FALCO_BLASTER_STATUS_WORK_ID_FLAG_LOOP_ACCEPT);
     }
+    FT_MOTION_RATE(agent, 2.32);
 }
 
 unsafe extern "C" fn game_specialsstart(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     let boma = agent.boma();
-    FT_MOTION_RATE(agent, 0.6);
+    FT_MOTION_RATE(agent, 0.353);
 }
 
 unsafe extern "C" fn game_specials(agent: &mut L2CAgentBase) {

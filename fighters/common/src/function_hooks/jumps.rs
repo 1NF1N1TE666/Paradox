@@ -117,19 +117,15 @@ unsafe fn jump_aerial_4_stick_x_hook(ctx: &mut skyline::hooks::InlineCtx) {
 
 pub fn install() {
     unsafe {
-        // Stubs vanilla fullhop initial y velocity calculations
         skyline::patching::Patch::in_text(0x6d2194).nop();
-        // Stubs ControlModule::get_stick_x calls when calculating horizontal jump velocity
         skyline::patching::Patch::in_text(0x6ce6d8).nop();
         skyline::patching::Patch::in_text(0x6d19c4).nop();
         skyline::patching::Patch::in_text(0x6d1b10).nop();
         skyline::patching::Patch::in_text(0x6d0454).nop();
-        // Stubs ControlModule::get_stick_x calls when calculating double jump velocity
         skyline::patching::Patch::in_text(0x6ce7d0).nop();
         skyline::patching::Patch::in_text(0x6d05cc).nop();
         skyline::patching::Patch::in_text(0x6d117c).nop();
         skyline::patching::Patch::in_text(0x6ce28c).nop();
-        // Stubs vanilla initial horizontal jump speed calculations
         skyline::patching::Patch::in_text(0x6ce70c).nop();
         skyline::patching::Patch::in_text(0x6d19f8).nop();
         skyline::patching::Patch::in_text(0x6d1b44).nop();

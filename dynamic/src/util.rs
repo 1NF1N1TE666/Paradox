@@ -76,24 +76,6 @@ pub fn offset_to_addr<T>(offset: usize) -> *const T {
     }
 }
 
-pub fn get_match_mode() -> (u32, u32) {
-    #[skyline::from_offset(offsets::get_match_mode())]
-    fn get_mode_internal(main: &mut u32, sub: &mut u32);
-
-    let mut main = 0u32;
-    let mut sub = 0u32;
-    unsafe {
-        get_mode_internal(&mut main, &mut sub);
-    }
-    (main, sub)
-}
-
-pub fn get_global_frame_count() -> usize {
-    unsafe {
-        *offset_to_addr::<usize>(offsets::global_frame_counter())
-    }
-}
-
 #[skyline::from_offset(offsets::get_battle_object_from_id())]
 pub fn get_battle_object_from_id(id: u32) -> *mut BattleObject;
 
@@ -211,25 +193,6 @@ pub fn get_battle_object_from_entry_id(entry_id: u32) -> Option<*mut BattleObjec
     }
 }
 
-/// Only pulls the game state to perform actions on
-pub fn get_game_state() -> *const u64 {
-    unsafe {
-        let p_p_p_game_state = *offset_to_addr::<*const *const *const u64>(offsets::p_p_game_state());
-        if p_p_p_game_state.is_null() {
-            return std::ptr::null();
-        }
-        let p_p_game_state = *p_p_p_game_state;
-        if p_p_game_state.is_null() {
-            return std::ptr::null();
-        }
-        let p_game_state = *p_p_game_state;
-        if p_game_state.is_null() {
-            return std::ptr::null();
-        }
-        p_game_state
-    }
-}
-
 pub unsafe fn get_mapped_controller_inputs_from_id(player: usize) -> &'static MappedInputs {
     let base = *((skyline::hooks::getRegionAddress(skyline::hooks::Region::Text) as *mut u8)
         .add(0x52c40f0) as *const u64);
@@ -254,34 +217,6 @@ pub unsafe fn get_controller_from_id(player: usize) -> &'static Controller {
     let uvar3 = *((base + 0x298 + (4 * (player as u64))) as *const u32);
     let controller_struct = (base + (0x8 * (uvar3 as i32)) as u64) as *mut SomeControllerStruct;
     (*controller_struct).controller
-}
-
-/// Triggers a match exit (all the way back to the stage select screen) by entering into the `StateExit` game state.
-/// Note: Calling this function otuside of a match shouldn't crash but it has undefined behavior. If you do that, don't
-pub fn trigger_match_exit() {
-    unsafe {
-        let p_game_state = get_game_state();
-        if p_game_state.is_null() {
-            return;
-        }
-        // Finally call the vtable function on the game state
-        let vtable_func: extern "C" fn(*const u64) = std::mem::transmute(*(*p_game_state as *const u64).add(0x3));
-        vtable_func(p_game_state);
-    }
-}
-
-/// Triggers a match reset by loading into the same state that classic mode uses when you retry a game
-/// Note: Calling this function outside of a match shouldn't crash but it has undefined behavior. If you do that, don't
-pub fn trigger_match_reset() {
-    unsafe {
-        let p_game_state = get_game_state();
-        if p_game_state.is_null() {
-            return;
-        }
-        // Finally call the vtable function on the game state
-        let vtable_func: extern "C" fn(*const u64) = std::mem::transmute(*(*p_game_state as *const u64).add(0x5));
-        vtable_func(p_game_state);
-    }
 }
 
 /// Utility function to compare two masks, such as a "cat flag"
