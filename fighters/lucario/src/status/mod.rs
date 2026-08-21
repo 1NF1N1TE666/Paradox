@@ -21,7 +21,7 @@ unsafe extern "C" fn change_status_callback(fighter: &mut L2CFighterCommon) -> L
         VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_SPEED_X, 0.0);
         VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_SPEED_Y, 0.0);
         VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_LR, fighter.lr());
-        VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_DAMAGE_STORAGE, 0.0);
+        VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_DAMAGE_STORAGE, -1.0);
     }
 
     true.into()
@@ -32,10 +32,19 @@ unsafe extern "C" fn on_start(fighter: &mut L2CFighterCommon) {
     VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_SPEED_X, 0.0);
     VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_SPEED_Y, 0.0);
     VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_LR, fighter.lr());
-    VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_DAMAGE_STORAGE, 0.0);
+    VarModule::set_float(fighter.battle_object, vars::lucario::instance::PREV_DAMAGE_STORAGE, -1.0);
+}
+
+unsafe extern "C" fn special_lw_init(fighter: &mut L2CFighterCommon) -> L2CValue {
+    if !VarModule::is_flag(fighter.battle_object, vars::lucario::instance::AURA_MAXIMUS) {
+        0.into()
+    } else {
+        smashline::original_status(Init, fighter, *FIGHTER_STATUS_KIND_SPECIAL_LW)(fighter)
+    }
 }
 
 pub fn install(agent: &mut Agent) {
     agent.on_start(on_start);
+    agent.status(Init, *FIGHTER_STATUS_KIND_SPECIAL_LW, special_lw_init);
     special_s::install(agent);
 }

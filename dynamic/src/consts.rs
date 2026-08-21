@@ -203,9 +203,7 @@ pub mod vars {
     pub mod lucario {
         pub mod instance {
             // flags
-            pub const DISABLE_SPECIAL_LW: i32 = 0x0100;
-            pub const CANCEL_SPECIAL_LW: i32 = 0x0101;
-            pub const AURA_MAXIMUS: i32 = 0x0102;
+            pub const AURA_MAXIMUS: i32 = 0x0100;
             
             // floats
             pub const PREV_DAMAGE_STORAGE: i32 = 0x0100;
