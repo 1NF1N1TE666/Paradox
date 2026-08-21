@@ -1271,44 +1271,26 @@ impl BomaExt for BattleObjectModuleAccessor {
             fighter.change_status_req(*FIGHTER_STATUS_KIND_PASS, true);
         }
 
-        if !smashball::is_training_mode() {
+        if !smashball::is_training_mode()
+        && !lua_bind::FighterManager::is_result_mode(super::singletons::FighterManager())
+        && sv_information::is_ready_go() 
+        && Fighter::get_fighter_entry_count() != 0 {
             if fighter.is_status_one_of(death_statuses) 
-            || fighter.is_status_one_of(damage_statuses) 
-            || AttackModule::is_infliction_status(fighter.module_accessor, *COLLISION_KIND_MASK_ALL)
-            || lua_bind::FighterManager::is_result_mode(super::singletons::FighterManager()) 
-            || !sv_information::is_ready_go() {
+            || fighter.is_status_one_of(damage_statuses) {
                 VarModule::set_int(fighter.object(), vars::common::instance::STALL_TIMER, 0);
             } else {
-                let articles = [
-                    *FIGHTER_SAMUS_GENERATE_ARTICLE_CSHOT,
-                    *FIGHTER_SAMUS_GENERATE_ARTICLE_MISSILE,
-                    *FIGHTER_SAMUS_GENERATE_ARTICLE_SUPERMISSILE,
-                    *FIGHTER_SAMUS_GENERATE_ARTICLE_BOMB,
-                    *FIGHTER_FOX_GENERATE_ARTICLE_BLASTER_BULLET,
-                    *FIGHTER_FOX_GENERATE_ARTICLE_ILLUSION,
-                    *FIGHTER_KOOPA_GENERATE_ARTICLE_BREATH,
-                    *FIGHTER_MARIOD_GENERATE_ARTICLE_DRCAPSULE,
-                    *FIGHTER_FALCO_GENERATE_ARTICLE_BLASTER_BULLET,
-                    *FIGHTER_FALCO_GENERATE_ARTICLE_ILLUSION,
-                    *FIGHTER_LUCARIO_GENERATE_ARTICLE_AURABALL,
-                    *FIGHTER_LUCARIO_GENERATE_ARTICLE_QIGONG,
-                    *FIGHTER_WOLF_GENERATE_ARTICLE_BLASTER_BULLET,
-                    *FIGHTER_WOLF_GENERATE_ARTICLE_ILLUSION,
-                    *FIGHTER_RIDLEY_GENERATE_ARTICLE_BREATH
-                ];
-                let mut hit = false;
-                for i in articles {
-                    if ArticleModule::is_exist(fighter.module_accessor, i) {
-                        let article = ArticleModule::get_article(fighter.module_accessor, i);
-                        let article_id = smash::app::lua_bind::Article::get_battle_object_id(article) as u32;
-                        let article_boma = sv_battle_object::module_accessor(article_id);
-                        if AttackModule::is_infliction_status(article_boma, *COLLISION_KIND_MASK_ALL) {
-                            VarModule::set_int(fighter.object(), vars::common::instance::STALL_TIMER, 0);
-                            hit = true;
-                        }
+                let num_players = Fighter::get_fighter_entry_count();
+                let mut any_player_touched = false;
+                for i in 0..num_players {
+                    let opponent_boma = &mut *sv_battle_object::module_accessor(Fighter::get_id_from_entry_id(i));
+                    if opponent_boma.is_status_one_of(death_statuses) 
+                    || opponent_boma.is_status_one_of(damage_statuses) {
+                        any_player_touched = true;
                     }
                 }
-                if !hit {
+                if any_player_touched {
+                    VarModule::set_int(fighter.object(), vars::common::instance::STALL_TIMER, 0);
+                } else {
                     VarModule::add_int(fighter.object(), vars::common::instance::STALL_TIMER, 1);
                 }
             }
@@ -1493,8 +1475,12 @@ impl BomaExt for BattleObjectModuleAccessor {
             fighter.FighterStatusDamage__correctDamageVectorEffect(L2CValue::Bool(false));
         }
 
-        if (KineticModule::get_sum_speed_x(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_ALL).abs() >= 4.0 && fighter.is_status(*FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_LR))
-        || (KineticModule::get_sum_speed_y(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_ALL).abs() >= 4.0 && fighter.is_status_one_of(&[*FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_U, *FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_D])) {
+        if KineticModule::get_sum_speed(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_ALL).abs() >= fighter.get_param_float("common", "invalid_passive_speed") 
+        && fighter.is_status_one_of(&[
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_LR, 
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_U, 
+            *FIGHTER_STATUS_KIND_DAMAGE_FLY_REFLECT_D
+        ]) {
             fighter.change_status_req(*FIGHTER_STATUS_KIND_DEAD, false);
         }
 

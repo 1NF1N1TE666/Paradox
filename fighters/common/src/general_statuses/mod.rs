@@ -31,10 +31,20 @@ pub unsafe fn status_pre_DamageAir(fighter: &mut L2CFighterCommon) -> L2CValue {
     call_original!(fighter)
 }
 
+#[skyline::hook(replace = smash::lua2cpp::L2CFighterCommon_sub_DamageFlyCommon_init)]
+pub unsafe fn damage_fly_common_init(fighter: &mut L2CFighterCommon) {
+    if VarModule::is_flag(fighter.battle_object, vars::common::instance::NO_GROUND_BOUNCE) {
+        WorkModule::unable_transition_term(fighter.module_accessor, *FIGHTER_STATUS_TRANSITION_TERM_ID_DAMAGE_FLY_REFLECT_D);
+    }
+    VarModule::off_flag(fighter.battle_object, vars::common::instance::NO_GROUND_BOUNCE);
+    original!()(fighter)
+}
+
 fn nro_hook(info: &skyline::nro::NroInfo) {
     if info.name == "common" {
         skyline::install_hooks!(
             status_pre_DamageAir,
+            damage_fly_common_init,
             status_Landing_MainSub,
             status_LandingStiffness,
             status_pre_LandingLight,

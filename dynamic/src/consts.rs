@@ -83,7 +83,8 @@ pub mod vars {
             pub const WAS_PREV_STATUS_CANCELABLE: i32 = 0x0011;
             pub const IS_ENTER_DASH_CANCEL: i32 = 0x0012;
             pub const IS_DITCIT: i32 = 0x0013;
-            pub const BURST_LIMIT: i32 = 0x0014;
+            pub const NO_GROUND_BOUNCE: i32 = 0x0014;
+            pub const BURST_LIMIT: i32 = 0x0015;
 
             // ints
             pub const COSTUME_SLOT_NUMBER: i32 = 0x0001;
