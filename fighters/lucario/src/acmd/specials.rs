@@ -106,12 +106,13 @@ unsafe extern "C" fn effect_specialsthrow(agent: &mut L2CAgentBase) {
 unsafe extern "C" fn game_specialhi(agent: &mut L2CAgentBase) {
     let lua_state = agent.lua_state_agent;
     let boma = agent.boma();
-    FT_MOTION_RATE(agent, 0.5);
-    frame(lua_state, 27.0);
+    FT_MOTION_RATE(agent, 0.575);
+    frame(lua_state, 21.0);
     FT_MOTION_RATE(agent, 1.0);
     if is_excute(agent) {
         WorkModule::on_flag(boma, *FIGHTER_LUCARIO_MACH_STATUS_WORK_ID_FLAG_RUSH_DIR);
     }
+    FT_MOTION_RATE(agent, 0.44444);
 }
 
 unsafe extern "C" fn game_specialhimove(agent: &mut L2CAgentBase) {
